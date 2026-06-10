@@ -24,6 +24,22 @@ Pages are composed from typed **section blocks** (hero, text, gallery, cards, CT
 
 ---
 
+## Screenshots
+
+The bundled demo (a generic business site) rendered by Section CMS — every page
+is plain server-rendered HTML.
+
+| Home | Services |
+|------|----------|
+| [![Home page](docs/screenshots/home-desktop.png)](docs/screenshots/home-desktop.png) | [![Services page](docs/screenshots/services-desktop.png)](docs/screenshots/services-desktop.png) |
+
+<p align="center">
+  <img src="docs/screenshots/home-mobile.png" alt="Home page on mobile" width="280">
+  <br><em>Responsive by default (mobile view)</em>
+</p>
+
+---
+
 ## Tech stack
 
 | Layer | Choice |
@@ -105,6 +121,19 @@ Then open `http://localhost:8000/` for the site and `http://localhost:8000/admin
 > The demo seed is a generic business/agency site (Home, Services, About, Contact) that exercises several section types. Delete or edit any of it in the admin panel — none of it is required by the CMS.
 
 Full instructions, including production deployment, are in [`docs/deployment.md`](docs/deployment.md).
+
+### Run locally with Docker
+
+Prefer one command? With Docker installed:
+
+```bash
+docker compose up --build
+```
+
+This starts PHP/Apache + MariaDB, writes `.env`, initializes the schema and
+demo content automatically, and serves the site at **http://localhost:8080**
+(admin at **/admin**, login `admin` / `admin` — dev only). Stop with
+`docker compose down` (add `-v` to also drop the database volume).
 
 ---
 

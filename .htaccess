@@ -1,8 +1,10 @@
 RewriteEngine On
 
-# ─── Force HTTPS (works on any domain) ───
+# ─── Force HTTPS (works on any domain; skips local development) ───
 RewriteCond %{HTTPS} off
 RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteCond %{HTTP_HOST} !^localhost [NC]
+RewriteCond %{HTTP_HOST} !^127\.0\.0\.1 [NC]
 RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
 
 # ─── Optional: force the canonical "www." host ───

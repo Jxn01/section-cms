@@ -1,0 +1,46 @@
+# Section CMS — one-command local environment.
+#
+#   docker compose up --build
+#   → site:  http://localhost:8080
+#   → admin: http://localhost:8080/admin   (admin / admin)
+#
+# For local dev only — do not use these credentials in production.
+
+services:
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: section_cms
+      MARIADB_USER: section_cms
+      MARIADB_PASSWORD: section_cms
+      MARIADB_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - db_data:/var/lib/mysql
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_NAME: section_cms
+      DB_USER: section_cms
+      DB_PASS: section_cms
+      SITE_URL: http://localhost:8080
+      ADMIN_USER: admin
+      ADMIN_PASS: admin
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+
+volumes:
+  db_data:

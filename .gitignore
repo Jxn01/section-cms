@@ -12,6 +12,9 @@ assets/uploads/*
 !assets/uploads/.gitkeep
 legacy/
 
+# Docker local-init marker
+.docker-initialized
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db
