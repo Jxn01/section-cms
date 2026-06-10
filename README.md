@@ -1,5 +1,9 @@
 # Section CMS
 
+[![CI](https://github.com/Jxn01/section-cms/actions/workflows/ci.yml/badge.svg)](https://github.com/Jxn01/section-cms/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![PHP 8.1+](https://img.shields.io/badge/PHP-8.1%2B-777BB4)
+
 A lightweight, modular, **SEO-first content management system** written from scratch in plain PHP — no framework, no build step, no Composer dependencies (PHPMailer is vendored).
 
 Pages are composed from typed **section blocks** (hero, text, gallery, cards, CTA, accordion, …) and assembled **entirely server-side**, so every page is fully crawlable. It runs comfortably on the cheapest shared hosting — including hosting that's sold and provisioned for WordPress (see [Running on WordPress hosting](#running-on-wordpress-hosting)).
@@ -122,6 +126,21 @@ This only applies to hosting **you own or are authorized to manage**. Step-by-st
 - **Add a language:** create `config/lang/<code>/` with the same keys, add the code to `I18n::SUPPORTED`, done. Page/section content itself is authored per page in the admin and can be in any language.
 
 ---
+
+## Testing & CI
+
+A dependency-free test runner exercises the core logic that doesn't need a
+database — i18n (fallback, placeholders, locale dates), the HTML sanitizer,
+routing, SEO meta/JSON-LD building, EN/HU dictionary parity, and the page
+templates:
+
+```bash
+php tests/run.php
+```
+
+[GitHub Actions](.github/workflows/ci.yml) runs on every push: it lints all
+PHP files and runs the test suite across **PHP 8.1–8.4**, and builds, vets and
+format-checks the Go deployer.
 
 ## Security notes
 
