@@ -1,0 +1,30 @@
+<?php
+// Shared UI strings reused across the admin panel and (a few) public
+// pages. Keep these generic — page-specific strings live elsewhere.
+return [
+    'common.save'        => 'Save',
+    'common.cancel'      => 'Cancel',
+    'common.edit'        => 'Edit',
+    'common.delete'      => 'Delete',
+    'common.view'        => 'View',
+    'common.create'      => 'Create',
+    'common.add'         => 'Add',
+    'common.back'        => 'Back',
+    'common.close'       => 'Close',
+    'common.upload'      => 'Upload',
+    'common.browse'      => 'Browse',
+    'common.search'      => 'Search',
+    'common.required'    => 'Required',
+    'common.optional'    => 'Optional',
+    'common.actions'     => 'Actions',
+    'common.status'      => 'Status',
+    'common.type'        => 'Type',
+    'common.title'       => 'Title',
+    'common.slug'        => 'Slug',
+    'common.date'        => 'Date',
+    'common.draft'       => 'Draft',
+    'common.published'   => 'Published',
+    'common.yes'         => 'Yes',
+    'common.no'          => 'No',
+    'common.none'        => 'None',
+];

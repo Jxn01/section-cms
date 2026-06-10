@@ -1,0 +1,14 @@
+# Section CMS — FTP/FTPS deploy settings
+# Copy this file to "deploy.conf" and fill in your own server details.
+#
+# WARNING: deploy.conf contains a password!
+# Do not share it and do not commit it to Git (it is gitignored).
+
+ftp_host = ftp.example.com
+ftp_port = 21
+ftp_user = your-username
+ftp_pass = your-password
+site_url = https://www.example.com
+
+# Remote base directory (most hosts: / or /public_html/)
+remote_base = /
