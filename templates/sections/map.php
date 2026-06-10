@@ -19,7 +19,7 @@ $height = (int) ($content['height'] ?? 400);
                     allowfullscreen=""
                     loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"
-                    title="<?= $h($content['heading'] ?? 'Térkép') ?>"></iframe>
+                    title="<?= $h(!empty($content['heading']) ? $content['heading'] : t('site.map')) ?>"></iframe>
         </div>
     <?php endif; ?>
 </section>

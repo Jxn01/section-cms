@@ -1,20 +1,20 @@
 <?php
 // ═══════════════════════════════════════════════════════════════
-// SEO (Kereső-optimalizálás)
+// SEO (Search Engine Optimization)
 // ═══════════════════════════════════════════════════════════════
-// Meta tag-ek, Open Graph, Twitter Card és JSON-LD
-// strukturált adatok összeállítása oldalanként.
+// Builds the per-page meta tags, Open Graph, Twitter Card and
+// JSON-LD structured data.
 // ═══════════════════════════════════════════════════════════════
 
 class SEO {
 
     /**
-     * SEO adatok összeállítása egy adott oldalhoz.
-     * Visszaad egy asszociatív tömböt: title, description, keywords,
-     * canonical, og:*, twitter:*, json-ld stb.
+     * Build the SEO data for a single page.
+     * Returns an associative array: title, description, keywords,
+     * canonical, og:*, twitter:*, json-ld, etc.
      */
     public static function buildMeta(array $page, array $settings): array {
-        $siteName = $settings['site_name'] ?? 'Parkoló ABC';
+        $siteName = $settings['site_name'] ?? 'Section CMS';
         $baseUrl  = SITE_BASE_URL;
         $slug     = $page['slug'] === 'home' ? '' : $page['slug'];
         $canonical = $baseUrl . '/' . $slug;
@@ -80,7 +80,7 @@ class SEO {
             $html .= '    <meta name="twitter:image" content="' . $h($twImg) . "\">\n";
         }
         // Locale
-        $html .= '    <meta property="og:locale" content="hu_HU">' . "\n";
+        $html .= '    <meta property="og:locale" content="' . $h(I18n::ogLocale()) . "\">\n";
         return $html;
     }
 
@@ -88,7 +88,7 @@ class SEO {
      * Build JSON-LD structured data for the page.
      */
     public static function renderJsonLd(array $page, array $settings): string {
-        $siteName  = $settings['site_name'] ?? 'Parkoló ABC';
+        $siteName  = $settings['site_name'] ?? 'Section CMS';
         $baseUrl   = SITE_BASE_URL;
 
         $graph = [];
@@ -157,7 +157,7 @@ class SEO {
                     [
                         '@type' => 'ListItem',
                         'position' => 1,
-                        'name' => 'Kezdőlap',
+                        'name' => t('site.home'),
                         'item' => $baseUrl . '/',
                     ],
                     [

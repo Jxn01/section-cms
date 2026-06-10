@@ -34,7 +34,7 @@ if ($pdo) {
             <?php foreach ($featuredImages as $i => $img): ?>
                 <div class="hero-ss-slide<?= $i === 0 ? ' active' : '' ?>"
                      style="background-image: url('/assets/uploads/<?= $h($img['filename']) ?>')"
-                     role="img" aria-label="<?= $h($img['alt_text'] ?: 'Referencia kép') ?>"></div>
+                     role="img" aria-label="<?= $h($img['alt_text'] ?: t('site.image')) ?>"></div>
             <?php endforeach; ?>
         <?php else: ?>
             <div class="hero-ss-slide active" style="background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 100%)"></div>

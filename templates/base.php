@@ -2,7 +2,7 @@
 // ─── Base Template ───
 // HTML skeleton wrapping all pages. Receives: $seo, $settings, $menus, $page, $bodyHtml
 $h = function ($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); };
-$siteName    = $settings['site_name'] ?? 'Parkoló ABC';
+$siteName    = $settings['site_name'] ?? 'Section CMS';
 $currentSlug = $page['slug'] ?? '';
 $logoUrl     = $settings['logo_url'] ?? '';
 $logoMode    = $settings['logo_display_mode'] ?? 'none'; // 'replace', 'beside', 'none'
@@ -44,13 +44,13 @@ function renderFooterSitemap($items, $h, $depth = 0) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="<?= I18n::htmlLang() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="<?= htmlspecialchars($seo['robots'] ?? 'index, follow', ENT_QUOTES, 'UTF-8') ?>">
-    <meta name="theme-color" content="#0067FF">
-    <link rel="alternate" hreflang="hu" href="<?= SITE_BASE_URL ?>/<?= $page['slug'] === 'home' ? '' : htmlspecialchars($page['slug'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="theme-color" content="<?= $h($settings['primary_color'] ?? '#0067FF') ?>">
+    <link rel="alternate" hreflang="<?= I18n::htmlLang() ?>" href="<?= SITE_BASE_URL ?>/<?= $page['slug'] === 'home' ? '' : htmlspecialchars($page['slug'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
     <?= SEO::renderMetaTags($seo) ?>
     <?= SEO::renderJsonLd($page, $settings) ?>
 
@@ -64,11 +64,11 @@ function renderFooterSitemap($items, $h, $depth = 0) {
 </head>
 <body>
 
-<a href="#content" class="skip-link">Ugrás a tartalomhoz</a>
+<a href="#content" class="skip-link"><?= $h(t('site.skip_to_content')) ?></a>
 
 <header class="site-header">
     <div class="container header-inner">
-        <a href="/" class="site-logo" aria-label="<?= $h($siteName) ?> – Kezdőlap">
+        <a href="/" class="site-logo" aria-label="<?= $h(t('site.home_aria', ['site' => $siteName])) ?>">
             <?php if ($logoUrl && $logoMode === 'replace'): ?>
                 <img src="<?= $h($logoUrl) ?>" alt="<?= $h($siteName) ?>" class="logo-img">
             <?php elseif ($logoUrl && $logoMode === 'beside'): ?>
@@ -79,11 +79,11 @@ function renderFooterSitemap($items, $h, $depth = 0) {
             <?php endif; ?>
         </a>
 
-        <button class="menu-toggle" aria-label="Menü megnyitása" aria-expanded="false">
+        <button class="menu-toggle" aria-label="<?= $h(t('site.open_menu')) ?>" aria-expanded="false">
             <span class="hamburger"></span>
         </button>
 
-        <nav class="main-nav" aria-label="Fő navigáció">
+        <nav class="main-nav" aria-label="<?= $h(t('site.main_nav')) ?>">
             <ul class="nav-list">
                 <?php renderMenuItems($menus, $currentSlug, $h); ?>
             </ul>
@@ -103,22 +103,22 @@ function renderFooterSitemap($items, $h, $depth = 0) {
                 <p><?= $h($settings['contact_address']) ?></p>
             <?php endif; ?>
             <?php if (!empty($settings['contact_phone'])): ?>
-                <p>Tel: <a href="tel:<?= preg_replace('/[^+0-9]/', '', $settings['contact_phone'] ?? '') ?>"><?= $h($settings['contact_phone']) ?></a></p>
+                <p><?= $h(t('site.phone_label')) ?>: <a href="tel:<?= preg_replace('/[^+0-9]/', '', $settings['contact_phone'] ?? '') ?>"><?= $h($settings['contact_phone']) ?></a></p>
             <?php endif; ?>
             <?php if (!empty($settings['contact_email'])): ?>
-                <p>E-mail: <a href="mailto:<?= $h($settings['contact_email']) ?>"><?= $h($settings['contact_email']) ?></a></p>
+                <p><?= $h(t('site.email_label')) ?>: <a href="mailto:<?= $h($settings['contact_email']) ?>"><?= $h($settings['contact_email']) ?></a></p>
             <?php endif; ?>
         </div>
-        <nav class="footer-nav" aria-label="Lábléc navigáció">
+        <nav class="footer-nav" aria-label="<?= $h(t('site.footer_nav')) ?>">
             <details class="footer-sitemap-details">
-                <summary class="footer-sitemap-toggle">🗺️ Oldaltérkép</summary>
+                <summary class="footer-sitemap-toggle">🗺️ <?= $h(t('site.sitemap')) ?></summary>
                 <div class="footer-sitemap-content">
                     <?php renderFooterSitemap($menus, $h); ?>
                 </div>
             </details>
         </nav>
         <div class="footer-copy">
-            <p>&copy; <?= date('Y') ?> <?= $h($siteName) ?>. Minden jog fenntartva.</p>
+            <p>&copy; <?= date('Y') ?> <?= $h($siteName) ?>. <?= $h(t('site.rights_reserved')) ?></p>
         </div>
     </div>
 </footer>

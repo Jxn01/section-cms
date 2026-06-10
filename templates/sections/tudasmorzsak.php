@@ -1,9 +1,9 @@
 <?php
-// ─── Tudásmorzsák Section ───
+// ─── Knowledge Bites Section (tudasmorzsak) ───
 // Floating knowledge boxes with header, description, and link.
 // Items float in from the right in randomized order on each page load.
 $h = function ($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); };
-$heading = $content['heading'] ?? 'Tudásmorzsák';
+$heading = $content['heading'] ?? 'Knowledge bites';
 $items   = $content['items'] ?? [];
 if (empty($items)) return;
 
@@ -25,7 +25,7 @@ $sectionId = $section['id'];
             <<?= $tag ?><?= $href ?> class="tudasmorzsa-card" style="animation-delay: <?= $i * 0.12 ?>s">
                 <?php if ($title): ?><h3 class="tudasmorzsa-title"><?= $title ?></h3><?php endif; ?>
                 <?php if ($desc): ?><p class="tudasmorzsa-desc"><?= $desc ?></p><?php endif; ?>
-                <?php if ($url): ?><span class="tudasmorzsa-link">Tovább →</span><?php endif; ?>
+                <?php if ($url): ?><span class="tudasmorzsa-link"><?= $h(t('site.read_more')) ?> →</span><?php endif; ?>
             </<?= $tag ?>>
             <?php endforeach; ?>
         </div>

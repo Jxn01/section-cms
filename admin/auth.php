@@ -9,7 +9,25 @@ session_start([
 ]);
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../core/i18n.php';
 require_once __DIR__ . '/includes/csrf.php';
+
+// ─── Admin UI language ───
+// The admin panel can be used in any supported language. "?lang=xx"
+// switches it and persists the choice in the session; otherwise it
+// defaults to the site's configured language, then to English.
+if (isset($_GET['lang'])) {
+    $_SESSION['admin_lang'] = I18n::normalize($_GET['lang']);
+}
+if (empty($_SESSION['admin_lang'])) {
+    try {
+        $configured = $pdo->query("SELECT setting_value FROM site_settings WHERE setting_key = 'site_language'")->fetchColumn();
+        $_SESSION['admin_lang'] = I18n::normalize((string) ($configured ?: 'en'));
+    } catch (Throwable $e) {
+        $_SESSION['admin_lang'] = 'en';
+    }
+}
+I18n::init($_SESSION['admin_lang']);
 
 function isLoggedIn(): bool {
     return !empty($_SESSION['admin_user_id']);

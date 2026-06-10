@@ -35,16 +35,16 @@ $range   = max($maxFreq - $minFreq, 1);
         <?php if (!empty($content['heading'])): ?>
             <h2 class="section-heading"><?= $h($content['heading']) ?></h2>
         <?php endif; ?>
-        <div class="keywords-cloud" role="navigation" aria-label="Kulcsszavak">
+        <div class="keywords-cloud" role="navigation" aria-label="<?= $h(t('site.keywords')) ?>">
             <?php foreach ($allKeywords as $keyword => $freq):
                 $size = 0.8 + (($freq - $minFreq) / $range) * 1.7;
                 $slug = urlencode($keyword);
             ?>
-                <a href="/kulcsszo/<?= $slug ?>"
+                <a href="/keyword/<?= $slug ?>"
                    class="keyword-tag"
                    style="font-size:<?= number_format($size, 2) ?>rem;"
-                   title="<?= $freq ?> oldal"
-                   aria-label="<?= $h($keyword) ?> — <?= $freq ?> kapcsolódó oldal"><?= $h($keyword) ?></a>
+                   title="<?= $h(t('site.kw_pages_title', ['count' => $freq])) ?>"
+                   aria-label="<?= $h(t('site.kw_pages_aria', ['keyword' => $keyword, 'count' => $freq])) ?>"><?= $h($keyword) ?></a>
             <?php endforeach; ?>
         </div>
     </div>

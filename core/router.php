@@ -1,20 +1,20 @@
 <?php
 // ═══════════════════════════════════════════════════════════════
-// Router (Útvonalkezelő)
+// Router
 // ═══════════════════════════════════════════════════════════════
-// A kérés URL-jéből kinyeri a slug-ot, és az adatbázisban
-// megkeresi a hozzá tartozó publikált oldalt.
-// Speciális útvonalakat is kezel: sitemap.xml, robots.txt
+// Resolves the slug from the request URL and looks up the matching
+// published page in the database. Also handles special routes:
+// sitemap.xml and robots.txt.
 // ═══════════════════════════════════════════════════════════════
 
 class Router {
 
     /**
-     * Slug kinyerése a kérés URI-ból.
-     * A "/" gyökér URL a "home" slug-ra képződik le.
+     * Extract the slug from the request URI.
+     * The "/" root URL maps to the "home" slug.
      *
-     * @param string $uri  A teljes kérés URI (pl. "/szolgaltatasaink?q=1")
-     * @return string      A tiszta slug (pl. "szolgaltatasaink")
+     * @param string $uri  The full request URI (e.g. "/services?q=1")
+     * @return string      The clean slug (e.g. "services")
      */
     public static function resolve(string $uri): string {
         $path = parse_url($uri, PHP_URL_PATH);
@@ -23,12 +23,12 @@ class Router {
     }
 
     /**
-     * Publikált oldal lekérése slug alapján.
-     * Csak a status='published' oldalakat adja vissza.
+     * Fetch a published page by slug.
+     * Only returns pages with status = 'published'.
      *
-     * @param PDO    $pdo   Adatbázis kapcsolat
-     * @param string $slug  Az oldal URL slug-ja
-     * @return array|false  Az oldal adatai, vagy false ha nem létezik
+     * @param PDO    $pdo   Database connection
+     * @param string $slug  The page URL slug
+     * @return array|false  The page row, or false if it does not exist
      */
     public static function getPage(PDO $pdo, string $slug) {
         $stmt = $pdo->prepare(
@@ -39,10 +39,10 @@ class Router {
     }
 
     /**
-     * Speciális útvonalak kezelése (sitemap.xml, robots.txt).
-     * Ha az útvonal speciális, a kimenetet közvetlenül kiírja.
+     * Handle special routes (sitemap.xml, robots.txt).
+     * If the route is special, the output is written directly.
      *
-     * @return bool  true ha kezelte az útvonalat, false ha nem
+     * @return bool  true if the route was handled, false otherwise
      */
     public static function handleSpecialRoutes(PDO $pdo, string $slug): bool {
         if ($slug === 'sitemap.xml') {

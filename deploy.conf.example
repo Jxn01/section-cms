@@ -1,14 +1,14 @@
-# ParkolóABC Telepítő — FTP beállítások
-# Másolja át "deploy.conf" néven és töltse ki a saját szerver adataival.
+# Section CMS — FTP/FTPS deploy settings
+# Copy this file to "deploy.conf" and fill in your own server details.
 #
-# FIGYELEM: A deploy.conf fájl jelszót tartalmaz!
-# Ne ossza meg, ne töltse fel Git-be!
+# WARNING: deploy.conf contains a password!
+# Do not share it and do not commit it to Git (it is gitignored).
 
-ftp_host = ftp.szerver.hu
+ftp_host = ftp.example.com
 ftp_port = 21
-ftp_user = felhasznalonev
-ftp_pass = jelszo_ide
-site_url = https://www.weboldal.hu
+ftp_user = your-username
+ftp_pass = your-password
+site_url = https://www.example.com
 
-# Távoli mappa (legtöbb hosting: / vagy /public_html/)
+# Remote base directory (most hosts: / or /public_html/)
 remote_base = /

@@ -12,95 +12,96 @@ $templates = require __DIR__ . '/../config/templates.php';
 $isNew = isset($_GET['new']);
 $pageId = isset($_GET['id']) ? (int) $_GET['id'] : null;
 
-// Hungarian character transliteration for slug generation
+// Transliterate accented characters (incl. Hungarian) for slug generation.
 function transliterateHu(string $str): string {
     $map = ['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ö'=>'o','ő'=>'o','ú'=>'u','ü'=>'u','ű'=>'u',
             'Á'=>'a','É'=>'e','Í'=>'i','Ó'=>'o','Ö'=>'o','Ő'=>'o','Ú'=>'u','Ü'=>'u','Ű'=>'u'];
     return strtr($str, $map);
 }
 
-// All available section types with defaults
+// All available section types with default content (written to the DB
+// when a new block is created; fully editable afterwards).
 $sectionDefaults = [
-    'hero'           => ['heading' => 'Új fejléc', 'subtitle' => '', 'image' => '', 'cta_text' => '', 'cta_url' => ''],
-    'text'           => ['heading' => 'Új szöveg', 'body' => '<p>Szöveg...</p>'],
-    'image_text'     => ['heading' => 'Kép és szöveg', 'body' => '<p>Szöveg...</p>', 'image' => '', 'image_alt' => '', 'image_position' => 'right'],
-    'gallery'        => ['heading' => 'Galéria', 'images' => []],
-    'cta'            => ['heading' => 'CTA', 'subtitle' => '', 'button_text' => 'Tovább', 'button_url' => '/', 'background_color' => '#0067FF'],
-    'cards'          => ['heading' => 'Kártyák', 'cards' => [['title' => 'Kártya', 'description' => 'Leírás', 'icon' => '⭐', 'link' => '']]],
-    'ticker'         => ['items' => [['text' => 'Hír szövege...', 'link' => '']], 'speed' => 30, 'background_color' => '#0067FF', 'text_color' => '#FFFFFF'],
-    'accordion'      => ['heading' => 'Gyakran Ismételt Kérdések', 'items' => [['question' => 'Kérdés?', 'answer' => '<p>Válasz.</p>']]],
-    'video'          => ['heading' => 'Videó', 'url' => '', 'type' => 'youtube'],
+    'hero'           => ['heading' => 'New hero', 'subtitle' => '', 'image' => '', 'cta_text' => '', 'cta_url' => ''],
+    'text'           => ['heading' => 'New text', 'body' => '<p>Text...</p>'],
+    'image_text'     => ['heading' => 'Image and text', 'body' => '<p>Text...</p>', 'image' => '', 'image_alt' => '', 'image_position' => 'right'],
+    'gallery'        => ['heading' => 'Gallery', 'images' => []],
+    'cta'            => ['heading' => 'CTA', 'subtitle' => '', 'button_text' => 'Learn more', 'button_url' => '/', 'background_color' => '#0067FF'],
+    'cards'          => ['heading' => 'Cards', 'cards' => [['title' => 'Card', 'description' => 'Description', 'icon' => '⭐', 'link' => '']]],
+    'ticker'         => ['items' => [['text' => 'News item...', 'link' => '']], 'speed' => 30, 'background_color' => '#0067FF', 'text_color' => '#FFFFFF'],
+    'accordion'      => ['heading' => 'Frequently Asked Questions', 'items' => [['question' => 'Question?', 'answer' => '<p>Answer.</p>']]],
+    'video'          => ['heading' => 'Video', 'url' => '', 'type' => 'youtube'],
     'divider'        => ['style' => 'line', 'spacing' => 'normal'],
-    'two_columns'    => ['heading' => '', 'left_body' => '<p>Bal oszlop szövege...</p>', 'right_body' => '<p>Jobb oszlop szövege...</p>'],
-    'testimonials'   => ['heading' => 'Vélemények', 'items' => [['name' => 'Név', 'text' => 'Vélemény szövege...', 'role' => '', 'image' => '']]],
-    'stats'          => ['heading' => '', 'background_color' => '#0067FF', 'items' => [['number' => '100+', 'label' => 'Ügyfél']]],
-    'page_list'      => ['heading' => 'Cikkek', 'page_type' => 'article', 'count' => 10],
-    'map'            => ['heading' => 'Térkép', 'embed_url' => '', 'height' => '400'],
-    'contact_form'   => ['heading' => 'Kapcsolat', 'success_message' => 'Köszönjük az üzenetet! Hamarosan felvesszük Önnel a kapcsolatot.'],
-    'keywords_cloud' => ['heading' => 'Kulcsszavak', 'count' => 50],
-    'hero_slideshow'    => ['heading' => 'Parkoló ABC', 'subtitle' => '', 'cta_text' => '', 'cta_url' => '', 'interval' => 4, 'overlay_boxes' => []],
-    'product_grid'      => ['heading' => 'Termékek', 'columns' => 5, 'items' => [['title' => 'Termék', 'short_desc' => 'Leírás', 'image' => '', 'image_alt' => '', 'url' => '']]],
-    'seo_hidden'        => ['button_text' => 'Tovább olvasom...', 'body' => '<p>SEO szöveg...</p>'],
-    'link_banner'       => ['text' => 'Alapfogalmak', 'url' => '/alapfogalmak', 'icon' => '📖', 'background_color' => '#0067FF'],
-    'reference_gallery' => ['heading' => 'Referenciáink', 'projects' => [['title' => 'Projekt', 'cover_image' => '', 'cover_alt' => '', 'images' => []]]],
-    'sitemap'            => ['heading' => 'Oldaltérkép'],
-    'tudasmorzsak'       => ['heading' => 'Tudásmorzsák', 'items' => [['title' => 'Fogalom', 'description' => 'Rövid leírás...', 'url' => '']]],
+    'two_columns'    => ['heading' => '', 'left_body' => '<p>Left column text...</p>', 'right_body' => '<p>Right column text...</p>'],
+    'testimonials'   => ['heading' => 'Testimonials', 'items' => [['name' => 'Name', 'text' => 'Testimonial text...', 'role' => '', 'image' => '']]],
+    'stats'          => ['heading' => '', 'background_color' => '#0067FF', 'items' => [['number' => '100+', 'label' => 'Clients']]],
+    'page_list'      => ['heading' => 'Articles', 'page_type' => 'article', 'count' => 10],
+    'map'            => ['heading' => 'Map', 'embed_url' => '', 'height' => '400'],
+    'contact_form'   => ['heading' => 'Contact', 'success_message' => ''],
+    'keywords_cloud' => ['heading' => 'Keywords', 'count' => 50],
+    'hero_slideshow'    => ['heading' => 'Section CMS', 'subtitle' => '', 'cta_text' => '', 'cta_url' => '', 'interval' => 4, 'overlay_boxes' => []],
+    'product_grid'      => ['heading' => 'Products', 'columns' => 5, 'items' => [['title' => 'Product', 'short_desc' => 'Description', 'image' => '', 'image_alt' => '', 'url' => '']]],
+    'seo_hidden'        => ['button_text' => 'Read more...', 'body' => '<p>SEO text...</p>'],
+    'link_banner'       => ['text' => 'Glossary', 'url' => '/glossary', 'icon' => '📖', 'background_color' => '#0067FF'],
+    'reference_gallery' => ['heading' => 'Our references', 'projects' => [['title' => 'Project', 'cover_image' => '', 'cover_alt' => '', 'images' => []]]],
+    'sitemap'            => ['heading' => 'Sitemap'],
+    'tudasmorzsak'       => ['heading' => 'Knowledge bites', 'items' => [['title' => 'Term', 'description' => 'Short description...', 'url' => '']]],
 ];
 
-// Section type labels in Hungarian
+// Section type labels (translation keys → resolved per locale)
 $sectionLabels = [
-    'hero'           => 'Hero (fejléckép)',
-    'text'           => 'Szöveg',
-    'image_text'     => 'Kép + szöveg',
-    'cards'          => 'Kártyák',
-    'cta'            => 'CTA (cselekvésre ösztönzés)',
-    'gallery'        => 'Galéria',
-    'ticker'         => 'Futó szöveg (hírszalag)',
-    'accordion'      => 'Harmonika (GYIK)',
-    'video'          => 'Videó',
-    'divider'        => 'Elválasztó',
-    'two_columns'    => 'Két oszlop',
-    'testimonials'   => 'Vélemények',
-    'stats'          => 'Számok / Statisztika',
-    'page_list'      => 'Oldal/cikk lista',
-    'map'            => 'Térkép',
-    'contact_form'   => 'Kapcsolat űrlap',
-    'keywords_cloud' => 'Kulcsszó felhő',
-    'hero_slideshow'    => 'Hero diavetítés',
-    'product_grid'      => 'Termékrács (hover leírás)',
-    'seo_hidden'        => 'Rejtett SEO szöveg',
-    'link_banner'       => 'Linksáv (hivatkozás)',
-    'reference_gallery' => 'Referencia galéria',
-    'sitemap'              => 'Oldaltérkép',
-    'tudasmorzsak'         => 'Tudásmorzsák',
+    'hero'           => t('admin.section.hero_label'),
+    'text'           => t('admin.section.text_label'),
+    'image_text'     => t('admin.section.image_text_label'),
+    'cards'          => t('admin.section.cards_label'),
+    'cta'            => t('admin.section.cta_label'),
+    'gallery'        => t('admin.section.gallery_label'),
+    'ticker'         => t('admin.section.ticker_label'),
+    'accordion'      => t('admin.section.accordion_label'),
+    'video'          => t('admin.section.video_label'),
+    'divider'        => t('admin.section.divider_label'),
+    'two_columns'    => t('admin.section.two_columns_label'),
+    'testimonials'   => t('admin.section.testimonials_label'),
+    'stats'          => t('admin.section.stats_label'),
+    'page_list'      => t('admin.section.page_list_label'),
+    'map'            => t('admin.section.map_label'),
+    'contact_form'   => t('admin.section.contact_form_label'),
+    'keywords_cloud' => t('admin.section.keywords_cloud_label'),
+    'hero_slideshow'    => t('admin.section.hero_slideshow_label'),
+    'product_grid'      => t('admin.section.product_grid_label'),
+    'seo_hidden'        => t('admin.section.seo_hidden_label'),
+    'link_banner'       => t('admin.section.link_banner_label'),
+    'reference_gallery' => t('admin.section.reference_gallery_label'),
+    'sitemap'              => t('admin.section.sitemap_label'),
+    'tudasmorzsak'         => t('admin.section.tudasmorzsak_label'),
 ];
 
-// Section type descriptions in Hungarian
+// Section type descriptions (translation keys → resolved per locale)
 $sectionDescriptions = [
-    'hero'           => 'Teljes szélességű fejléckép nagy címsorral, alcímmel és opcionális CTA gombbal. Ideális az oldal tetejére, hogy azonnal megragadja a figyelmet.',
-    'text'           => 'Egyszerű szöveges blokk címsorral és formázható tartalommal (félkövér, lista, link stb.). A leggyakrabban használt szekciótípus.',
-    'image_text'     => 'Kép és szöveg egymás mellett. A kép lehet bal vagy jobb oldalon. Tökéletes szolgáltatás vagy termék bemutatásához.',
-    'cards'          => 'Kártyák rácsban, mindegyik ikonnal, címmel és leírással. Ideális szolgáltatások vagy előnyök felsorolásához.',
-    'cta'            => 'Cselekvésre ösztönző sáv háttérszínnel, szöveggel és gombbal. Használja az oldal közepén vagy végén a látogató aktivizálásához.',
-    'gallery'        => 'Képgaléria rács elrendezésben. A képek kattintásra nagyíthatók. Ideális referenciák vagy projektek bemutatásához.',
-    'ticker'         => 'Vízszintesen futó szövegszalag. Figyelemfelkeltő hírek, akciók vagy fontos információk megjelenítésére.',
-    'accordion'      => 'Lenyíló kérdés-válasz elemek. Tökéletes GYIK (Gyakran Ismételt Kérdések) oldalakhoz. A Google is szereti, mert FAQ strukturált adatot generál.',
-    'video'          => 'YouTube vagy Vimeo videó beágyazás. A videó reszponzívan jelenik meg minden eszközön.',
-    'divider'        => 'Vizuális elválasztó vonal, pontok, hullám vagy üres tér. Szekciók közötti vizuális szünet létrehozásához.',
-    'two_columns'    => 'Két oszlopos szövegelrendezés. Mindkét oszlop formázható (félkövér, lista, link stb.).',
-    'testimonials'   => 'Ügyfélvélemények kártyákon, névvel, pozícióval és opcionális fotóval. Növeli a bizalmat az új látogatóknál.',
-    'stats'          => 'Számok/statisztikák kiemelése nagy betűmérettel (pl. „100+ Ügyfél", „15 Év tapasztalat"). Háttérszín beállítható.',
-    'page_list'      => 'Automatikus oldal- vagy cikklista. A rendszer a megadott típusú oldalakat (cikk/oldal) listázza ki címmel, leírással és képpel.',
-    'map'            => 'Google Maps beágyazott térkép. Illessze be a Google Maps beágyazási URL-t az iroda vagy telephely megjelenítéséhez.',
-    'contact_form'   => 'Kapcsolatfelvételi űrlap (név, e-mail, telefon, üzenet). A beérkezett üzenetek az Üzenetek menüben olvashatók.',
-    'keywords_cloud' => 'Automatikus kulcsszó felhő — összegyűjti az összes oldal kulcsszavait és a leggyakoribbakat jeleníti meg linkekkel. Belső linkelésre kiváló.',
-    'hero_slideshow'    => 'Főoldali diavetítés a Médiában „kiemelt" jelölésű képekből, automatikus képváltással. Navigációs dobozokat is elhelyezhet a képen.',
-    'product_grid'      => 'Termék/eszköz rács képekkel. Kurzor ráhúzásakor a kép helyén megjelenik a rövid leírás, kattintásra a részletes oldalra navigál.',
-    'seo_hidden'        => 'Rejtett lenyitható szöveg — a Google látja és indexeli, de a weboldalon csak gombra kattintva jelenik meg. Hirdetési szövegek, kulcsszavak elhelyezésére ideális.',
-    'link_banner'       => 'Széles színes sáv, amely egy másik oldalra mutat (pl. Alapfogalmak). Ikonnal, szöveggel és nyíllal jelenik meg.',
-    'reference_gallery' => 'Projektek alapján csoportosított galéria. Soronként 4 borítókép; kurzor ráhúzásakor további képek jelennek meg az adott projektből.',
-    'sitemap'            => 'Automatikus, hierarchikus oldaltérkép a menüszerkezet és az összes publikált oldal alapján. Segíti a Google indexálást és a látogatói navigációt.',
-    'tudasmorzsak'       => 'Kis tudásdobozok (lexikon jellegű): cím, rövid leírás és opcionális link. Random sorrendben, jobbról beússzanak. Ideális szakkifejezések, fogalmak bemutatására.',
+    'hero'           => t('admin.section.hero_desc'),
+    'text'           => t('admin.section.text_desc'),
+    'image_text'     => t('admin.section.image_text_desc'),
+    'cards'          => t('admin.section.cards_desc'),
+    'cta'            => t('admin.section.cta_desc'),
+    'gallery'        => t('admin.section.gallery_desc'),
+    'ticker'         => t('admin.section.ticker_desc'),
+    'accordion'      => t('admin.section.accordion_desc'),
+    'video'          => t('admin.section.video_desc'),
+    'divider'        => t('admin.section.divider_desc'),
+    'two_columns'    => t('admin.section.two_columns_desc'),
+    'testimonials'   => t('admin.section.testimonials_desc'),
+    'stats'          => t('admin.section.stats_desc'),
+    'page_list'      => t('admin.section.page_list_desc'),
+    'map'            => t('admin.section.map_desc'),
+    'contact_form'   => t('admin.section.contact_form_desc'),
+    'keywords_cloud' => t('admin.section.keywords_cloud_desc'),
+    'hero_slideshow'    => t('admin.section.hero_slideshow_desc'),
+    'product_grid'      => t('admin.section.product_grid_desc'),
+    'seo_hidden'        => t('admin.section.seo_hidden_desc'),
+    'link_banner'       => t('admin.section.link_banner_desc'),
+    'reference_gallery' => t('admin.section.reference_gallery_desc'),
+    'sitemap'            => t('admin.section.sitemap_desc'),
+    'tudasmorzsak'       => t('admin.section.tudasmorzsak_desc'),
 ];
 
 // ─── Handle POST (save) ───
@@ -109,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Creating a new page from template
     if (!empty($_POST['create_page'])) {
         csrfVerify();
-        $title    = trim($_POST['title'] ?? 'Új oldal');
+        $title    = trim($_POST['title'] ?? t('admin.pages.default_new_page_title'));
         $slug     = trim($_POST['slug'] ?? '');
         $template = $_POST['template'] ?? 'hero_two_text';
 
@@ -119,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Sanitize slug
         $slug = trim($slug, '-');
         if ($slug === '') {
-            $slug = 'oldal-' . time();
+            $slug = 'page-' . time();
         }
 
         // Check for duplicate slug
@@ -131,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Fetch site name for SEO defaults
         $siteNameRow = $pdo->query("SELECT setting_value FROM site_settings WHERE setting_key = 'site_name'")->fetch();
-        $siteNameVal = $siteNameRow ? $siteNameRow['setting_value'] : 'Parkoló ABC';
+        $siteNameVal = $siteNameRow ? $siteNameRow['setting_value'] : 'Section CMS';
 
         // Auto-detect page_type from template
         $pageType = ($template === 'article') ? 'article' : 'page';
@@ -147,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'template'   => $template,
             'page_type'  => $pageType,
             'meta_title' => $title . ' – ' . $siteNameVal,
-            'meta_desc'  => $title . ' – ' . $siteNameVal . '. Tudjon meg többet szolgáltatásainkról.',
+            'meta_desc'  => $title . ' – ' . $siteNameVal . '. ' . t('admin.pages.default_meta_desc'),
         ]);
         $newPageId = (int) $pdo->lastInsertId();
 
@@ -206,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Auto-fill SEO fields from title if empty
         if ($saveMetaTitle === '') {
             $sn = $pdo->query("SELECT setting_value FROM site_settings WHERE setting_key = 'site_name'")->fetchColumn();
-            $saveMetaTitle = $saveTitle . ' – ' . ($sn ?: 'Parkoló ABC');
+            $saveMetaTitle = $saveTitle . ' – ' . ($sn ?: 'Section CMS');
         }
         if ($saveOgTitle === '') {
             $saveOgTitle = $saveMetaTitle;
@@ -373,37 +374,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($isNew) {
     require __DIR__ . '/includes/header.php';
     ?>
-    <h1>Új oldal létrehozása</h1>
+    <h1><?= te('admin.pages.new_page_title') ?></h1>
     <div class="help-box">
-        <strong>📄 Új oldal létrehozása sablon alapján.</strong> Válasszon egy sablont — ez meghatározza, milyen szekciókkal indul az oldal. Később tetszőlegesen szerkesztheti, hozzáadhat vagy törölhet szekciókat.
+        <strong>📄 <?= te('admin.pages.new_help') ?></strong> <?= te('admin.pages.new_help_body') ?>
     </div>
     <form method="POST" class="admin-form">
         <?= csrfField() ?>
         <div class="form-group">
-            <label for="title">Oldal címe
-                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Az oldal főcíme. Megjelenik a böngésző fülön és fejlécben. Ebből generálódik a slug (URL) is.</span></span>
+            <label for="title"><?= te('admin.pages.field_page_title') ?>
+                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_new_title') ?></span></span>
             </label>
-            <input type="text" id="title" name="title" required placeholder="pl. Szolgáltatásaink">
+            <input type="text" id="title" name="title" required placeholder="<?= $h(t('admin.pages.placeholder_new_title')) ?>">
         </div>
         <div class="form-group">
-            <label for="slug">Slug (URL)
-                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Az URL végén megjelenő azonosító. Ha üresen hagyja, a rendszer automatikusan generálja a címből. Csak kisbetűk, számok és kötőjel használható.</span></span>
+            <label for="slug"><?= te('admin.pages.field_slug_url') ?>
+                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_new_slug') ?></span></span>
             </label>
-            <input type="text" id="slug" name="slug" placeholder="pl. szolgaltatasaink (üresen hagyva automatikus)">
-            <div class="field-hint">Az oldal elérhetősége: parkoloabc.hu/<strong>slug</strong></div>
+            <input type="text" id="slug" name="slug" placeholder="<?= $h(t('admin.pages.placeholder_new_slug')) ?>">
+            <div class="field-hint"><?= te('admin.pages.hint_page_url') ?> example.com/<strong><?= te('common.slug') ?></strong></div>
         </div>
         <div class="form-group">
-            <label for="template">Sablon
-                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">A sablon meghatározza az oldal kezdeti felépítését (milyen szekciókkal indul). A létrehozás után szabadon módosíthatja.</span></span>
+            <label for="template"><?= te('admin.pages.field_template') ?>
+                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_template') ?></span></span>
             </label>
             <select id="template" name="template">
                 <?php foreach ($templates as $key => $tpl): ?>
-                    <option value="<?= $h($key) ?>"><?= $h($tpl['name']) ?></option>
+                    <option value="<?= $h($key) ?>"><?= $h(t($tpl['name'])) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
-        <button type="submit" name="create_page" value="1" class="btn btn-primary">Létrehozás</button>
-        <a href="/admin/pages.php" class="btn btn-secondary">Mégse</a>
+        <button type="submit" name="create_page" value="1" class="btn btn-primary"><?= te('common.create') ?></button>
+        <a href="/admin/pages.php" class="btn btn-secondary"><?= te('common.cancel') ?></a>
     </form>
     <?php
     require __DIR__ . '/includes/footer.php';
@@ -438,7 +439,7 @@ $allPagesForLinks = $pdo->query("SELECT id, title, slug FROM pages WHERE status 
 function pageSelector($allPages, $targetInputId, $h) {
     ?>
     <select class="page-selector" data-link-target="<?= $h($targetInputId) ?>" style="margin-top:0.25rem;">
-        <option value="">— Oldal kiválasztása —</option>
+        <option value="">— <?= $h(t('admin.pages.select_page')) ?> —</option>
         <?php foreach ($allPages as $pg): ?>
             <option value="<?= $pg['slug'] === 'home' ? '/' : '/' . $h($pg['slug']) ?>">
                 <?= $h($pg['title']) ?>
@@ -452,7 +453,7 @@ function pageSelector($allPages, $targetInputId, $h) {
 function pageSelectorTpl($allPages, $targetIdPattern, $h) {
     ?>
     <select class="page-selector" data-link-target="<?= $h($targetIdPattern) ?>" style="margin-top:0.25rem;">
-        <option value="">— Oldal kiválasztása —</option>
+        <option value="">— <?= $h(t('admin.pages.select_page')) ?> —</option>
         <?php foreach ($allPages as $pg): ?>
             <option value="<?= $pg['slug'] === 'home' ? '/' : '/' . $h($pg['slug']) ?>">
                 <?= $h($pg['title']) ?>
@@ -464,7 +465,7 @@ function pageSelectorTpl($allPages, $targetIdPattern, $h) {
 
 // Helper: render remove button for a repeater item
 function repeaterRemoveBtn() {
-    echo '<button type="button" class="repeater-remove" title="Elem törlése">✕</button>';
+    echo '<button type="button" class="repeater-remove" title="' . htmlspecialchars(t('admin.pages.remove_item'), ENT_QUOTES, 'UTF-8') . '">✕</button>';
 }
 
 require __DIR__ . '/includes/header.php';
@@ -473,131 +474,131 @@ require __DIR__ . '/includes/header.php';
 <?php if (isset($_GET['msg'])): ?>
     <div class="alert alert-success">
         <?php
-        $msgs = ['saved' => 'Mentve.', 'created' => 'Oldal létrehozva.'];
-        echo $h($msgs[$_GET['msg']] ?? 'Kész.');
+        $msgs = ['saved' => t('admin.pages.msg_saved'), 'created' => t('admin.pages.msg_created')];
+        echo $h($msgs[$_GET['msg']] ?? t('admin.pages.msg_done'));
         ?>
     </div>
 <?php endif; ?>
 
 <div class="page-header">
-    <h1>Szerkesztés: <?= $h($page['title']) ?></h1>
+    <h1><?= $h(t('admin.pages.edit_heading', ['title' => $page['title']])) ?></h1>
     <a href="/<?= $page['slug'] === 'home' ? '' : $h($page['slug']) ?>"
-       target="_blank" class="btn btn-secondary">Megtekintés ↗</a>
+       target="_blank" class="btn btn-secondary"><?= te('common.view') ?> ↗</a>
 </div>
 
 <form method="POST" class="admin-form">
     <?= csrfField() ?>
     <fieldset>
-        <legend>Oldal adatok</legend>
+        <legend><?= te('admin.pages.legend_page_data') ?></legend>
         <div class="form-row">
             <div class="form-group">
-                <label for="title">Cím
-                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Az oldal főcíme. Megjelenik a fejlécben és a böngésző fülön. Nem összekeverendő a „Meta cím"-mel (SEO).</span></span>
+                <label for="title"><?= te('common.title') ?>
+                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_title') ?></span></span>
                 </label>
                 <input type="text" id="title" name="title" value="<?= $h($page['title']) ?>" required>
             </div>
             <div class="form-group">
-                <label for="slug">Slug
-                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Az URL végén megjelenő azonosító. Pl. „szolgaltatasaink" → parkoloabc.hu/szolgaltatasaink. Módosítás esetén a régi URL nem fog működni!</span></span>
+                <label for="slug"><?= te('common.slug') ?>
+                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_slug') ?></span></span>
                 </label>
                 <input type="text" id="slug" name="slug" value="<?= $h($page['slug']) ?>"
                     <?= $page['slug'] === 'home' ? 'readonly' : '' ?>>
-                <small class="form-help">Csak kisbetűk, számok és kötőjelek. Ez lesz az URL: parkoloabc.hu/<strong>slug</strong></small>
+                <small class="form-help"><?= te('admin.pages.slug_help') ?> example.com/<strong><?= te('common.slug') ?></strong></small>
             </div>
             <div class="form-group">
-                <label for="status">Státusz
-                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">„Publikált" = az oldal nyilvánosan elérhető és a Google indexeli. „Piszkozat" = rejtett, csak az admin felületen látható.</span></span>
+                <label for="status"><?= te('common.status') ?>
+                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_status') ?></span></span>
                 </label>
                 <select id="status" name="status">
-                    <option value="draft" <?= $page['status'] === 'draft' ? 'selected' : '' ?>>Piszkozat</option>
-                    <option value="published" <?= $page['status'] === 'published' ? 'selected' : '' ?>>Publikált</option>
+                    <option value="draft" <?= $page['status'] === 'draft' ? 'selected' : '' ?>><?= te('common.draft') ?></option>
+                    <option value="published" <?= $page['status'] === 'published' ? 'selected' : '' ?>><?= te('common.published') ?></option>
                 </select>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label for="page_type">Típus
-                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">„Oldal" = normál tartalom. „Cikk" = blogbejegyzés speciális SEO jelöléssel (szerző, dátum). A cikkek a „Cikklista" szekcióban is megjelennek.</span></span>
+                <label for="page_type"><?= te('common.type') ?>
+                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_type') ?></span></span>
                 </label>
                 <select id="page_type" name="page_type">
-                    <option value="page" <?= ($page['page_type'] ?? 'page') === 'page' ? 'selected' : '' ?>>Oldal</option>
-                    <option value="article" <?= ($page['page_type'] ?? '') === 'article' ? 'selected' : '' ?>>Cikk</option>
+                    <option value="page" <?= ($page['page_type'] ?? 'page') === 'page' ? 'selected' : '' ?>><?= te('admin.pages.page') ?></option>
+                    <option value="article" <?= ($page['page_type'] ?? '') === 'article' ? 'selected' : '' ?>><?= te('admin.pages.article') ?></option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="featured_image">Kiemelt kép URL
-                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Az oldal kiemelt képe. Megjelenik a közösségi médiában (Facebook, LinkedIn) megosztásnál és a cikklistában. A „Tallózás" gombbal választhat a feltöltött képek közül.</span></span>
+                <label for="featured_image"><?= te('admin.pages.field_featured_image') ?>
+                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_featured_image') ?></span></span>
                 </label>
                 <div class="input-with-browse">
                     <input type="text" id="featured_image" name="featured_image"
-                           value="<?= $h($page['featured_image'] ?? '') ?>" placeholder="/assets/uploads/kep.jpg">
-                    <button type="button" class="btn btn-sm browse-media-btn" data-target="featured_image">Tallózás</button>
+                           value="<?= $h($page['featured_image'] ?? '') ?>" placeholder="/assets/uploads/image.jpg">
+                    <button type="button" class="btn btn-sm browse-media-btn" data-target="featured_image"><?= te('common.browse') ?></button>
                 </div>
             </div>
         </div>
     </fieldset>
 
     <fieldset>
-        <legend>SEO (keresőoptimalizálás)
-            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">A SEO beállítások határozzák meg, hogyan jelenik meg az oldal a Google keresési eredményekben és a közösségi médiában. Nagyon fontos a jó helyezéshez!</span></span>
+        <legend><?= te('admin.pages.legend_seo') ?>
+            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_seo') ?></span></span>
         </legend>
         <div class="help-box" style="margin-bottom:1rem;">
-            <strong>🔍 Miért fontos a SEO?</strong> A Google és más keresőmotorok ezeket az adatokat használják az oldal megjelenítéséhez a találati listában.
-            <button type="button" class="help-toggle" data-target="seoHelp" aria-expanded="false"><span class="help-toggle-icon">▸</span> SEO segítség</button>
+            <strong>🔍 <?= te('admin.pages.seo_why_title') ?></strong> <?= te('admin.pages.seo_why_body') ?>
+            <button type="button" class="help-toggle" data-target="seoHelp" aria-expanded="false"><span class="help-toggle-icon">▸</span> <?= te('admin.pages.seo_help_more') ?></button>
             <div class="help-collapsible" id="seoHelp">
                 <ul style="margin:0.5rem 0 0 1.2rem;font-size:0.85rem;line-height:1.7;">
-                    <li><strong>Meta cím:</strong> A Google találatokban félkövér kékkel jelenik meg. Max. 60 karakter ajánlott — ennél hosszabb szöveget a Google levágja.</li>
-                    <li><strong>Meta leírás:</strong> A Google találatokban a cím alatt szürkén jelenik meg. Max. 160 karakter. Írjon vonzó, cselekvésre ösztönző szöveget!</li>
-                    <li><strong>Kulcsszavak:</strong> Vesszővel elválasztva adja meg (pl. „parkoló, sorompó, beléptető rendszer"). Segít a Google-nek megérteni az oldal tartalmát.</li>
-                    <li><strong>OG adatok:</strong> Ezek jelennek meg, ha valaki megosztja az oldalt Facebookon, LinkedIn-en stb. Ha üresen hagyja, a meta cím/leírás lesz használva.</li>
-                    <li>💡 <em>Tipp: Minden oldalnak legyen egyedi meta címe és leírása!</em></li>
+                    <li><strong><?= te('admin.pages.field_meta_title') ?>:</strong> <?= te('admin.pages.seo_help_meta_title') ?></li>
+                    <li><strong><?= te('admin.pages.field_meta_desc') ?>:</strong> <?= te('admin.pages.seo_help_meta_desc') ?></li>
+                    <li><strong><?= te('admin.pages.field_keywords') ?>:</strong> <?= te('admin.pages.seo_help_keywords') ?></li>
+                    <li><strong><?= te('admin.pages.seo_help_og_label') ?>:</strong> <?= te('admin.pages.seo_help_og') ?></li>
+                    <li>💡 <em><?= te('admin.pages.seo_help_tip') ?></em></li>
                 </ul>
             </div>
         </div>
         <div class="form-group">
-            <label for="meta_title">Meta cím
-                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">A böngésző fülön és a Google találatokban megjelenő cím. Ajánlott: 50–60 karakter. Ha üres, a rendszer az oldal címéből generálja.</span></span>
-                <small style="font-weight:normal;color:#94A3B8">(ajánlott: max. 60 karakter)</small>
+            <label for="meta_title"><?= te('admin.pages.field_meta_title') ?>
+                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_meta_title') ?></span></span>
+                <small style="font-weight:normal;color:#94A3B8"><?= te('admin.pages.hint_max_60') ?></small>
             </label>
             <input type="text" id="meta_title" name="meta_title" value="<?= $h($page['meta_title']) ?>">
         </div>
         <div class="form-group">
-            <label for="meta_description">Meta leírás
-                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Ez a szöveg jelenik meg a Google találatokban a cím alatt. Írjon vonzó leírást, ami kattintásra ösztönöz! Ajánlott: 120–160 karakter.</span></span>
-                <small style="font-weight:normal;color:#94A3B8">(ajánlott: max. 160 karakter)</small>
+            <label for="meta_description"><?= te('admin.pages.field_meta_desc') ?>
+                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_meta_desc') ?></span></span>
+                <small style="font-weight:normal;color:#94A3B8"><?= te('admin.pages.hint_max_160') ?></small>
             </label>
             <textarea id="meta_description" name="meta_description" rows="2"><?= $h($page['meta_description']) ?></textarea>
         </div>
         <div class="form-group">
-            <label for="meta_keywords">Kulcsszavak
-                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Vesszővel elválasztott kulcsszavak, amelyek az oldal tartalmát jellemzik. Pl. „parkoló rendszer, sorompó, beléptető".</span></span>
-                <small style="font-weight:normal;color:#94A3B8">(vesszővel elválasztva)</small>
+            <label for="meta_keywords"><?= te('admin.pages.field_keywords') ?>
+                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_keywords') ?></span></span>
+                <small style="font-weight:normal;color:#94A3B8"><?= te('admin.pages.hint_comma_separated') ?></small>
             </label>
             <input type="text" id="meta_keywords" name="meta_keywords" value="<?= $h($page['meta_keywords']) ?>">
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label for="og_title">OG cím
-                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Open Graph cím — ez jelenik meg, ha az oldalt Facebookon vagy LinkedIn-en megosztják. Ha üresen hagyja, a meta cím lesz használva.</span></span>
-                    <small style="font-weight:normal;color:#94A3B8">(közösségi média)</small>
+                <label for="og_title"><?= te('admin.pages.field_og_title') ?>
+                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_og_title') ?></span></span>
+                    <small style="font-weight:normal;color:#94A3B8"><?= te('admin.pages.hint_social') ?></small>
                 </label>
                 <input type="text" id="og_title" name="og_title" value="<?= $h($page['og_title']) ?>"
-                       placeholder="Ha üres, a meta cím lesz használva">
+                       placeholder="<?= $h(t('admin.pages.placeholder_og_title')) ?>">
             </div>
             <div class="form-group">
-                <label for="og_description">OG leírás
-                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Open Graph leírás — a közösségi média megosztásnál a cím alatt jelenik meg. Ha üresen hagyja, a meta leírás lesz használva.</span></span>
-                    <small style="font-weight:normal;color:#94A3B8">(közösségi média)</small>
+                <label for="og_description"><?= te('admin.pages.field_og_desc') ?>
+                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_og_desc') ?></span></span>
+                    <small style="font-weight:normal;color:#94A3B8"><?= te('admin.pages.hint_social') ?></small>
                 </label>
                 <input type="text" id="og_description" name="og_description" value="<?= $h($page['og_description']) ?>"
-                       placeholder="Ha üres, a meta leírás lesz használva">
+                       placeholder="<?= $h(t('admin.pages.placeholder_og_desc')) ?>">
             </div>
         </div>
     </fieldset>
 
-    <h2>Szekciók</h2>
+    <h2><?= te('admin.pages.sections') ?></h2>
     <div class="help-box" style="margin-bottom:1rem;">
-        <strong>🧱 A szekciók az oldal építőelemei.</strong> Minden oldal szekciókat tartalmaz, amelyek felülről lefelé jelennek meg a weboldalon. A ▲/▼ gombokkal rendezheti a sorrendet, a ✕ gombbal törölheti. Alul új szekciót adhat hozzá.
+        <strong>🧱 <?= te('admin.pages.sections_help_title') ?></strong> <?= te('admin.pages.sections_help_body') ?>
     </div>
 
     <?php foreach ($sections as $i => $sec): ?>
@@ -616,7 +617,7 @@ require __DIR__ . '/includes/header.php';
                     <?php endif; ?>
                     <button type="submit" name="delete_section" value="<?= $sec['id'] ?>"
                             class="btn btn-xs btn-danger"
-                            onclick="return confirm('Szekció törlése?')">✕</button>
+                            onclick="return confirm('<?= $h(t('admin.pages.confirm_delete_section')) ?>')">✕</button>
                 </span>
             </legend>
             <?php if (!empty($sectionDescriptions[$sec['type']])): ?>
@@ -628,27 +629,27 @@ require __DIR__ . '/includes/header.php';
             switch ($sec['type']):
                 case 'hero': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-group">
-                        <label>Alcím</label>
+                        <label><?= te('admin.pages.label_subtitle') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][subtitle]" value="<?= $h($c['subtitle'] ?? '') ?>">
                     </div>
                     <div class="form-group">
-                        <label>Háttérkép URL</label>
+                        <label><?= te('admin.pages.label_bg_image_url') ?></label>
                         <div class="input-with-browse">
                             <input type="text" id="hero_image_<?= $secId ?>" name="sections[<?= $secId ?>][image]" value="<?= $h($c['image'] ?? '') ?>">
-                            <button type="button" class="btn btn-sm browse-media-btn" data-target="hero_image_<?= $secId ?>">Tallózás</button>
+                            <button type="button" class="btn btn-sm browse-media-btn" data-target="hero_image_<?= $secId ?>"><?= te('common.browse') ?></button>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>CTA gomb szöveg</label>
+                            <label><?= te('admin.pages.label_cta_text') ?></label>
                             <input type="text" name="sections[<?= $secId ?>][cta_text]" value="<?= $h($c['cta_text'] ?? '') ?>">
                         </div>
                         <div class="form-group">
-                            <label>CTA gomb URL</label>
+                            <label><?= te('admin.pages.label_cta_url') ?></label>
                             <input type="text" id="hero_cta_<?= $secId ?>" name="sections[<?= $secId ?>][cta_url]" value="<?= $h($c['cta_url'] ?? '') ?>">
                             <?php pageSelector($allPagesForLinks, 'hero_cta_' . $secId, $h); ?>
                         </div>
@@ -657,7 +658,7 @@ require __DIR__ . '/includes/header.php';
 
                 case 'text': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-group">
@@ -669,7 +670,7 @@ require __DIR__ . '/includes/header.php';
 
                 case 'image_text': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-group">
@@ -679,23 +680,23 @@ require __DIR__ . '/includes/header.php';
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Kép URL</label>
+                            <label><?= te('admin.pages.label_image_url') ?></label>
                             <div class="input-with-browse">
                                 <input type="text" id="imgtext_image_<?= $secId ?>" name="sections[<?= $secId ?>][image]" value="<?= $h($c['image'] ?? '') ?>">
-                                <button type="button" class="btn btn-sm browse-media-btn" data-target="imgtext_image_<?= $secId ?>">Tallózás</button>
+                                <button type="button" class="btn btn-sm browse-media-btn" data-target="imgtext_image_<?= $secId ?>"><?= te('common.browse') ?></button>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Kép alt szöveg
-                                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Írja le röviden, mit ábrázol a kép. Fontos a Google képkereséshez és a látássérült felhasználók számára (akadálymentesség).</span></span>
+                            <label><?= te('admin.pages.label_image_alt') ?>
+                                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_image_alt') ?></span></span>
                             </label>
                             <input type="text" name="sections[<?= $secId ?>][image_alt]" value="<?= $h($c['image_alt'] ?? '') ?>">
                         </div>
                         <div class="form-group">
-                            <label>Kép pozíció</label>
+                            <label><?= te('admin.pages.label_image_position') ?></label>
                             <select name="sections[<?= $secId ?>][image_position]">
-                                <option value="right" <?= ($c['image_position'] ?? '') === 'right' ? 'selected' : '' ?>>Jobbra</option>
-                                <option value="left" <?= ($c['image_position'] ?? '') === 'left' ? 'selected' : '' ?>>Balra</option>
+                                <option value="right" <?= ($c['image_position'] ?? '') === 'right' ? 'selected' : '' ?>><?= te('admin.pages.opt_right') ?></option>
+                                <option value="left" <?= ($c['image_position'] ?? '') === 'left' ? 'selected' : '' ?>><?= te('admin.pages.opt_left') ?></option>
                             </select>
                         </div>
                     </div>
@@ -703,25 +704,25 @@ require __DIR__ . '/includes/header.php';
 
                 case 'cta': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-group">
-                        <label>Alcím</label>
+                        <label><?= te('admin.pages.label_subtitle') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][subtitle]" value="<?= $h($c['subtitle'] ?? '') ?>">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Gomb szöveg</label>
+                            <label><?= te('admin.pages.label_button_text') ?></label>
                             <input type="text" name="sections[<?= $secId ?>][button_text]" value="<?= $h($c['button_text'] ?? '') ?>">
                         </div>
                         <div class="form-group">
-                            <label>Gomb URL</label>
+                            <label><?= te('admin.pages.label_button_url') ?></label>
                             <input type="text" id="cta_btn_<?= $secId ?>" name="sections[<?= $secId ?>][button_url]" value="<?= $h($c['button_url'] ?? '') ?>">
                             <?php pageSelector($allPagesForLinks, 'cta_btn_' . $secId, $h); ?>
                         </div>
                         <div class="form-group">
-                            <label>Háttérszín</label>
+                            <label><?= te('admin.pages.label_bg_color') ?></label>
                             <input type="color" name="sections[<?= $secId ?>][background_color]" value="<?= $h($c['background_color'] ?? '#0067FF') ?>">
                         </div>
                     </div>
@@ -729,7 +730,7 @@ require __DIR__ . '/includes/header.php';
 
                 case 'cards': ?>
                     <div class="form-group">
-                        <label>Szekció címsor</label>
+                        <label><?= te('admin.pages.label_section_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="cards-editor" data-section-id="<?= $secId ?>">
@@ -743,7 +744,7 @@ require __DIR__ . '/includes/header.php';
                                                value="<?= $h($card['icon'] ?? '') ?>" style="width:60px">
                                     </div>
                                     <div class="form-group">
-                                        <label>Cím</label>
+                                        <label><?= te('common.title') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][cards][<?= $ci ?>][title]"
                                                value="<?= $h($card['title'] ?? '') ?>">
                                     </div>
@@ -755,7 +756,7 @@ require __DIR__ . '/includes/header.php';
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Leírás</label>
+                                    <label><?= te('admin.pages.label_description') ?></label>
                                     <textarea name="sections[<?= $secId ?>][cards][<?= $ci ?>][description]"
                                               rows="2"><?= $h($card['description'] ?? '') ?></textarea>
                                 </div>
@@ -770,7 +771,7 @@ require __DIR__ . '/includes/header.php';
                                         <input type="text" name="sections[<?= $secId ?>][cards][__IDX__][icon]" value="" style="width:60px">
                                     </div>
                                     <div class="form-group">
-                                        <label>Cím</label>
+                                        <label><?= te('common.title') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][cards][__IDX__][title]" value="">
                                     </div>
                                     <div class="form-group">
@@ -780,37 +781,37 @@ require __DIR__ . '/includes/header.php';
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Leírás</label>
+                                    <label><?= te('admin.pages.label_description') ?></label>
                                     <textarea name="sections[<?= $secId ?>][cards][__IDX__][description]" rows="2"></textarea>
                                 </div>
                             </div>
                         </template>
-                        <button type="button" class="btn btn-sm repeater-add-btn">+ Kártya hozzáadása</button>
+                        <button type="button" class="btn btn-sm repeater-add-btn">+ <?= te('admin.pages.add_card') ?></button>
                     </div>
                     <?php break;
 
                 case 'gallery': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="repeater-editor" data-section-id="<?= $secId ?>">
-                        <p class="form-help">Galéria képek:
-                            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Minden képnél adjon meg alt szöveget — ez fontos a Google képkereséshez és az akadálymentességhez!</span></span>
+                        <p class="form-help"><?= te('admin.pages.help_gallery_images') ?>
+                            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_gallery_alt') ?></span></span>
                         </p>
                         <?php foreach (($c['images'] ?? []) as $gi => $gImg): ?>
                             <div class="repeater-item">
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group" style="flex:2">
-                                        <label>Kép URL</label>
+                                        <label><?= te('admin.pages.label_image_url') ?></label>
                                         <div class="input-with-browse">
                                             <input type="text" id="gal_img_<?= $secId ?>_<?= $gi ?>" name="sections[<?= $secId ?>][images][<?= $gi ?>][url]" value="<?= $h($gImg['url'] ?? '') ?>">
-                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="gal_img_<?= $secId ?>_<?= $gi ?>">Tallózás</button>
+                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="gal_img_<?= $secId ?>_<?= $gi ?>"><?= te('common.browse') ?></button>
                                         </div>
                                     </div>
                                     <div class="form-group" style="flex:2">
-                                        <label>Alt szöveg (SEO)</label>
+                                        <label><?= te('admin.pages.label_alt_seo') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][images][<?= $gi ?>][alt]" value="<?= $h($gImg['alt'] ?? '') ?>">
                                     </div>
                                 </div>
@@ -821,51 +822,51 @@ require __DIR__ . '/includes/header.php';
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group" style="flex:2">
-                                        <label>Kép URL</label>
+                                        <label><?= te('admin.pages.label_image_url') ?></label>
                                         <div class="input-with-browse">
                                             <input type="text" id="gal_img_<?= $secId ?>___IDX__" name="sections[<?= $secId ?>][images][__IDX__][url]" value="">
-                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="gal_img_<?= $secId ?>___IDX__">Tallózás</button>
+                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="gal_img_<?= $secId ?>___IDX__"><?= te('common.browse') ?></button>
                                         </div>
                                     </div>
                                     <div class="form-group" style="flex:2">
-                                        <label>Alt szöveg (SEO)</label>
+                                        <label><?= te('admin.pages.label_alt_seo') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][images][__IDX__][alt]" value="">
                                     </div>
                                 </div>
                             </div>
                         </template>
-                        <button type="button" class="btn btn-sm repeater-add-btn">+ Kép hozzáadása</button>
+                        <button type="button" class="btn btn-sm repeater-add-btn">+ <?= te('admin.pages.add_image') ?></button>
                     </div>
                     <?php break;
 
                 case 'ticker': ?>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Háttérszín</label>
+                            <label><?= te('admin.pages.label_bg_color') ?></label>
                             <input type="color" name="sections[<?= $secId ?>][background_color]" value="<?= $h($c['background_color'] ?? '#0067FF') ?>">
                         </div>
                         <div class="form-group">
-                            <label>Szöveg szín</label>
+                            <label><?= te('admin.pages.label_text_color') ?></label>
                             <input type="color" name="sections[<?= $secId ?>][text_color]" value="<?= $h($c['text_color'] ?? '#FFFFFF') ?>">
                         </div>
                         <div class="form-group">
-                            <label>Sebesség (mp)</label>
+                            <label><?= te('admin.pages.label_speed') ?></label>
                             <input type="number" name="sections[<?= $secId ?>][speed]" value="<?= (int)($c['speed'] ?? 30) ?>" min="5" max="120">
                         </div>
                     </div>
                     <div class="repeater-editor" data-section-id="<?= $secId ?>">
-                        <p class="form-help">Futó szalag elemei:</p>
+                        <p class="form-help"><?= te('admin.pages.help_ticker_items') ?></p>
                         <?php foreach (($c['items'] ?? []) as $ti => $tItem): ?>
                             <div class="repeater-item">
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group" style="flex:2">
-                                        <label>Szöveg</label>
+                                        <label><?= te('admin.pages.label_text') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][<?= $ti ?>][text]"
                                                value="<?= $h($tItem['text'] ?? '') ?>">
                                     </div>
                                     <div class="form-group" style="flex:1">
-                                        <label>Link (opcionális)</label>
+                                        <label><?= te('admin.pages.label_link_optional') ?></label>
                                         <input type="text" id="ticker_link_<?= $secId ?>_<?= $ti ?>" name="sections[<?= $secId ?>][items][<?= $ti ?>][link]"
                                                value="<?= $h($tItem['link'] ?? '') ?>">
                                         <?php pageSelector($allPagesForLinks, 'ticker_link_' . $secId . '_' . $ti, $h); ?>
@@ -878,38 +879,38 @@ require __DIR__ . '/includes/header.php';
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group" style="flex:2">
-                                        <label>Szöveg</label>
+                                        <label><?= te('admin.pages.label_text') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][__IDX__][text]" value="">
                                     </div>
                                     <div class="form-group" style="flex:1">
-                                        <label>Link (opcionális)</label>
+                                        <label><?= te('admin.pages.label_link_optional') ?></label>
                                         <input type="text" id="ticker_link_<?= $secId ?>___IDX__" name="sections[<?= $secId ?>][items][__IDX__][link]" value="">
                                         <?php pageSelectorTpl($allPagesForLinks, 'ticker_link_' . $secId . '___IDX__', $h); ?>
                                     </div>
                                 </div>
                             </div>
                         </template>
-                        <button type="button" class="btn btn-sm repeater-add-btn">+ Elem hozzáadása</button>
+                        <button type="button" class="btn btn-sm repeater-add-btn">+ <?= te('admin.pages.add_element') ?></button>
                     </div>
                     <?php break;
 
                 case 'accordion': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="repeater-editor" data-section-id="<?= $secId ?>">
-                        <p class="form-help">Kérdés-válasz elemek:</p>
+                        <p class="form-help"><?= te('admin.pages.help_qa_items') ?></p>
                         <?php foreach (($c['items'] ?? []) as $ai => $aItem): ?>
                             <div class="repeater-item">
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-group">
-                                    <label>Kérdés</label>
+                                    <label><?= te('admin.pages.label_question') ?></label>
                                     <input type="text" name="sections[<?= $secId ?>][items][<?= $ai ?>][question]"
                                            value="<?= $h($aItem['question'] ?? '') ?>">
                                 </div>
                                 <div class="form-group">
-                                    <label>Válasz (HTML)</label>
+                                    <label><?= te('admin.pages.label_answer_html') ?></label>
                                     <textarea name="sections[<?= $secId ?>][items][<?= $ai ?>][answer]"
                                               rows="3"><?= $h($aItem['answer'] ?? '') ?></textarea>
                                 </div>
@@ -919,35 +920,35 @@ require __DIR__ . '/includes/header.php';
                             <div class="repeater-item">
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-group">
-                                    <label>Kérdés</label>
+                                    <label><?= te('admin.pages.label_question') ?></label>
                                     <input type="text" name="sections[<?= $secId ?>][items][__IDX__][question]" value="">
                                 </div>
                                 <div class="form-group">
-                                    <label>Válasz (HTML)</label>
+                                    <label><?= te('admin.pages.label_answer_html') ?></label>
                                     <textarea name="sections[<?= $secId ?>][items][__IDX__][answer]" rows="3"></textarea>
                                 </div>
                             </div>
                         </template>
-                        <button type="button" class="btn btn-sm repeater-add-btn">+ Kérdés hozzáadása</button>
+                        <button type="button" class="btn btn-sm repeater-add-btn">+ <?= te('admin.pages.add_question') ?></button>
                     </div>
                     <?php break;
 
                 case 'video': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-row">
                         <div class="form-group" style="flex:2">
-                            <label>Videó URL
-                                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Másolja be a YouTube vagy Vimeo videó teljes URL-jét. A rendszer automatikusan beágyazza. Pl: https://youtube.com/watch?v=abc123</span></span>
+                            <label><?= te('admin.pages.label_video_url') ?>
+                                <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_video_url') ?></span></span>
                             </label>
                             <input type="text" name="sections[<?= $secId ?>][url]"
                                    value="<?= $h($c['url'] ?? '') ?>"
-                                   placeholder="https://youtube.com/watch?v=... vagy https://vimeo.com/...">
+                                   placeholder="<?= $h(t('admin.pages.placeholder_video_url')) ?>">
                         </div>
                         <div class="form-group">
-                            <label>Típus</label>
+                            <label><?= te('common.type') ?></label>
                             <select name="sections[<?= $secId ?>][type]">
                                 <option value="youtube" <?= ($c['type'] ?? '') === 'youtube' ? 'selected' : '' ?>>YouTube</option>
                                 <option value="vimeo" <?= ($c['type'] ?? '') === 'vimeo' ? 'selected' : '' ?>>Vimeo</option>
@@ -959,20 +960,20 @@ require __DIR__ . '/includes/header.php';
                 case 'divider': ?>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Stílus</label>
+                            <label><?= te('admin.pages.label_style') ?></label>
                             <select name="sections[<?= $secId ?>][style]">
-                                <option value="line" <?= ($c['style'] ?? '') === 'line' ? 'selected' : '' ?>>Vonal</option>
-                                <option value="dots" <?= ($c['style'] ?? '') === 'dots' ? 'selected' : '' ?>>Pontok</option>
-                                <option value="space" <?= ($c['style'] ?? '') === 'space' ? 'selected' : '' ?>>Üres tér</option>
-                                <option value="wave" <?= ($c['style'] ?? '') === 'wave' ? 'selected' : '' ?>>Hullám</option>
+                                <option value="line" <?= ($c['style'] ?? '') === 'line' ? 'selected' : '' ?>><?= te('admin.pages.opt_line') ?></option>
+                                <option value="dots" <?= ($c['style'] ?? '') === 'dots' ? 'selected' : '' ?>><?= te('admin.pages.opt_dots') ?></option>
+                                <option value="space" <?= ($c['style'] ?? '') === 'space' ? 'selected' : '' ?>><?= te('admin.pages.opt_space') ?></option>
+                                <option value="wave" <?= ($c['style'] ?? '') === 'wave' ? 'selected' : '' ?>><?= te('admin.pages.opt_wave') ?></option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Méret</label>
+                            <label><?= te('admin.pages.label_size') ?></label>
                             <select name="sections[<?= $secId ?>][spacing]">
-                                <option value="compact" <?= ($c['spacing'] ?? '') === 'compact' ? 'selected' : '' ?>>Kompakt</option>
-                                <option value="normal" <?= ($c['spacing'] ?? '') === 'normal' ? 'selected' : '' ?>>Normál</option>
-                                <option value="wide" <?= ($c['spacing'] ?? '') === 'wide' ? 'selected' : '' ?>>Széles</option>
+                                <option value="compact" <?= ($c['spacing'] ?? '') === 'compact' ? 'selected' : '' ?>><?= te('admin.pages.opt_compact') ?></option>
+                                <option value="normal" <?= ($c['spacing'] ?? '') === 'normal' ? 'selected' : '' ?>><?= te('admin.pages.opt_normal') ?></option>
+                                <option value="wide" <?= ($c['spacing'] ?? '') === 'wide' ? 'selected' : '' ?>><?= te('admin.pages.opt_wide') ?></option>
                             </select>
                         </div>
                     </div>
@@ -980,17 +981,17 @@ require __DIR__ . '/includes/header.php';
 
                 case 'two_columns': ?>
                     <div class="form-group">
-                        <label>Címsor (opcionális)</label>
+                        <label><?= te('admin.pages.label_heading_optional') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Bal oszlop</label>
+                            <label><?= te('admin.pages.label_left_column') ?></label>
                             <div class="quill-editor" id="quill_left_<?= $secId ?>"><?= $c['left_body'] ?? '' ?></div>
                             <textarea name="sections[<?= $secId ?>][left_body]" class="quill-hidden" id="quill_hidden_left_<?= $secId ?>" style="display:none;"><?= $h($c['left_body'] ?? '') ?></textarea>
                         </div>
                         <div class="form-group">
-                            <label>Jobb oszlop</label>
+                            <label><?= te('admin.pages.label_right_column') ?></label>
                             <div class="quill-editor" id="quill_right_<?= $secId ?>"><?= $c['right_body'] ?? '' ?></div>
                             <textarea name="sections[<?= $secId ?>][right_body]" class="quill-hidden" id="quill_hidden_right_<?= $secId ?>" style="display:none;"><?= $h($c['right_body'] ?? '') ?></textarea>
                         </div>
@@ -999,36 +1000,36 @@ require __DIR__ . '/includes/header.php';
 
                 case 'testimonials': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="repeater-editor" data-section-id="<?= $secId ?>">
-                        <p class="form-help">Vélemények:</p>
+                        <p class="form-help"><?= te('admin.pages.help_testimonials') ?></p>
                         <?php foreach (($c['items'] ?? []) as $ti => $tItem): ?>
                             <div class="repeater-item">
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Név</label>
+                                        <label><?= te('admin.pages.label_name') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][<?= $ti ?>][name]"
                                                value="<?= $h($tItem['name'] ?? '') ?>">
                                     </div>
                                     <div class="form-group">
-                                        <label>Pozíció/Titulus</label>
+                                        <label><?= te('admin.pages.label_role') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][<?= $ti ?>][role]"
                                                value="<?= $h($tItem['role'] ?? '') ?>">
                                     </div>
                                     <div class="form-group">
-                                        <label>Kép URL</label>
+                                        <label><?= te('admin.pages.label_image_url') ?></label>
                                         <div class="input-with-browse">
                                             <input type="text" id="testi_img_<?= $secId ?>_<?= $ti ?>" name="sections[<?= $secId ?>][items][<?= $ti ?>][image]"
                                                    value="<?= $h($tItem['image'] ?? '') ?>">
-                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="testi_img_<?= $secId ?>_<?= $ti ?>">Tallózás</button>
+                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="testi_img_<?= $secId ?>_<?= $ti ?>"><?= te('common.browse') ?></button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Vélemény szövege</label>
+                                    <label><?= te('admin.pages.label_testimonial_text') ?></label>
                                     <textarea name="sections[<?= $secId ?>][items][<?= $ti ?>][text]"
                                               rows="2"><?= $h($tItem['text'] ?? '') ?></textarea>
                                 </div>
@@ -1039,57 +1040,57 @@ require __DIR__ . '/includes/header.php';
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Név</label>
+                                        <label><?= te('admin.pages.label_name') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][__IDX__][name]" value="">
                                     </div>
                                     <div class="form-group">
-                                        <label>Pozíció/Titulus</label>
+                                        <label><?= te('admin.pages.label_role') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][__IDX__][role]" value="">
                                     </div>
                                     <div class="form-group">
-                                        <label>Kép URL</label>
+                                        <label><?= te('admin.pages.label_image_url') ?></label>
                                         <div class="input-with-browse">
                                             <input type="text" id="testi_img_<?= $secId ?>___IDX__" name="sections[<?= $secId ?>][items][__IDX__][image]" value="">
-                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="testi_img_<?= $secId ?>___IDX__">Tallózás</button>
+                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="testi_img_<?= $secId ?>___IDX__"><?= te('common.browse') ?></button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Vélemény szövege</label>
+                                    <label><?= te('admin.pages.label_testimonial_text') ?></label>
                                     <textarea name="sections[<?= $secId ?>][items][__IDX__][text]" rows="2"></textarea>
                                 </div>
                             </div>
                         </template>
-                        <button type="button" class="btn btn-sm repeater-add-btn">+ Vélemény hozzáadása</button>
+                        <button type="button" class="btn btn-sm repeater-add-btn">+ <?= te('admin.pages.add_testimonial') ?></button>
                     </div>
                     <?php break;
 
                 case 'stats': ?>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Címsor (opcionális)</label>
+                            <label><?= te('admin.pages.label_heading_optional') ?></label>
                             <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                         </div>
                         <div class="form-group">
-                            <label>Háttérszín</label>
+                            <label><?= te('admin.pages.label_bg_color') ?></label>
                             <input type="color" name="sections[<?= $secId ?>][background_color]" value="<?= $h($c['background_color'] ?? '#0067FF') ?>">
                         </div>
                     </div>
                     <div class="repeater-editor" data-section-id="<?= $secId ?>">
-                        <p class="form-help">Számok/statisztikák:</p>
+                        <p class="form-help"><?= te('admin.pages.help_stats') ?></p>
                         <?php foreach (($c['items'] ?? []) as $si => $sItem): ?>
                             <div class="repeater-item">
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Szám</label>
+                                        <label><?= te('admin.pages.label_number') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][<?= $si ?>][number]"
                                                value="<?= $h($sItem['number'] ?? '') ?>" placeholder="100+">
                                     </div>
                                     <div class="form-group">
-                                        <label>Címke</label>
+                                        <label><?= te('admin.pages.label_stat_label') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][<?= $si ?>][label]"
-                                               value="<?= $h($sItem['label'] ?? '') ?>" placeholder="Elégedett ügyfél">
+                                               value="<?= $h($sItem['label'] ?? '') ?>" placeholder="<?= $h(t('admin.pages.placeholder_stat_label')) ?>">
                                     </div>
                                 </div>
                             </div>
@@ -1099,36 +1100,36 @@ require __DIR__ . '/includes/header.php';
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Szám</label>
+                                        <label><?= te('admin.pages.label_number') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][__IDX__][number]" value="" placeholder="100+">
                                     </div>
                                     <div class="form-group">
-                                        <label>Címke</label>
-                                        <input type="text" name="sections[<?= $secId ?>][items][__IDX__][label]" value="" placeholder="Elégedett ügyfél">
+                                        <label><?= te('admin.pages.label_stat_label') ?></label>
+                                        <input type="text" name="sections[<?= $secId ?>][items][__IDX__][label]" value="" placeholder="<?= $h(t('admin.pages.placeholder_stat_label')) ?>">
                                     </div>
                                 </div>
                             </div>
                         </template>
-                        <button type="button" class="btn btn-sm repeater-add-btn">+ Szám hozzáadása</button>
+                        <button type="button" class="btn btn-sm repeater-add-btn">+ <?= te('admin.pages.add_stat') ?></button>
                     </div>
                     <?php break;
 
                 case 'page_list': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Oldal típus szűrő</label>
+                            <label><?= te('admin.pages.label_page_type_filter') ?></label>
                             <select name="sections[<?= $secId ?>][page_type]">
-                                <option value="article" <?= ($c['page_type'] ?? '') === 'article' ? 'selected' : '' ?>>Cikkek</option>
-                                <option value="page" <?= ($c['page_type'] ?? '') === 'page' ? 'selected' : '' ?>>Oldalak</option>
-                                <option value="all" <?= ($c['page_type'] ?? '') === 'all' ? 'selected' : '' ?>>Minden</option>
+                                <option value="article" <?= ($c['page_type'] ?? '') === 'article' ? 'selected' : '' ?>><?= te('admin.pages.opt_articles') ?></option>
+                                <option value="page" <?= ($c['page_type'] ?? '') === 'page' ? 'selected' : '' ?>><?= te('admin.pages.opt_pages') ?></option>
+                                <option value="all" <?= ($c['page_type'] ?? '') === 'all' ? 'selected' : '' ?>><?= te('admin.pages.opt_all') ?></option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Darabszám</label>
+                            <label><?= te('admin.pages.label_count') ?></label>
                             <input type="number" name="sections[<?= $secId ?>][count]" value="<?= (int)($c['count'] ?? 10) ?>" min="1" max="100">
                         </div>
                     </div>
@@ -1136,98 +1137,98 @@ require __DIR__ . '/includes/header.php';
 
                 case 'map': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-group">
-                        <label>Google Maps beágyazási URL
-                            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Nyissa meg a Google Maps-et → keresse meg a helyszínt → kattintson a „Megosztás" gombra → válassza a „Térkép beágyazása" fület → másolja ki az src="..." közötti URL-t.</span></span>
+                        <label><?= te('admin.pages.label_map_embed_url') ?>
+                            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_map_embed') ?></span></span>
                         </label>
                         <input type="text" name="sections[<?= $secId ?>][embed_url]"
                                value="<?= $h($c['embed_url'] ?? '') ?>"
                                placeholder="https://www.google.com/maps/embed?pb=...">
-                        <div class="field-hint">Google Maps → Megosztás → Térkép beágyazása → másolja ki az iframe src URL-jét (https://www.google.com/maps/embed?pb=...)</div>
+                        <div class="field-hint"><?= te('admin.pages.hint_map_embed') ?></div>
                     </div>
                     <div class="form-group">
-                        <label>Magasság (px)</label>
+                        <label><?= te('admin.pages.label_height_px') ?></label>
                         <input type="number" name="sections[<?= $secId ?>][height]" value="<?= (int)($c['height'] ?? 400) ?>" min="200" max="800">
                     </div>
                     <?php break;
 
                 case 'contact_form': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-group">
-                        <label>Sikeres küldés üzenet
-                            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Ez az üzenet jelenik meg, miután a látogató sikeresen elküldte az űrlapot. Legyen barátságos és tájékoztassa, hogy mire számíthat.</span></span>
+                        <label><?= te('admin.pages.label_success_message') ?>
+                            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_success_message') ?></span></span>
                         </label>
                         <input type="text" name="sections[<?= $secId ?>][success_message]"
                                value="<?= $h($c['success_message'] ?? '') ?>">
-                        <div class="field-hint">A beérkezett üzenetek az admin „Üzenetek" menüben olvashatók.</div>
+                        <div class="field-hint"><?= te('admin.pages.hint_messages_menu') ?></div>
                     </div>
                     <?php break;
 
                 case 'keywords_cloud': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-group">
-                        <label>Maximum kulcsszavak száma</label>
+                        <label><?= te('admin.pages.label_max_keywords') ?></label>
                         <input type="number" name="sections[<?= $secId ?>][count]" value="<?= (int)($c['count'] ?? 50) ?>" min="10" max="200">
                     </div>
-                    <p class="form-help">Ez a szekció automatikusan összegyűjti az összes oldal kulcsszavait és megjeleníti a leggyakoribbakat.</p>
+                    <p class="form-help"><?= te('admin.pages.help_keywords_cloud') ?></p>
                     <?php break;
 
                 case 'hero_slideshow': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-group">
-                        <label>Alcím</label>
+                        <label><?= te('admin.pages.label_subtitle') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][subtitle]" value="<?= $h($c['subtitle'] ?? '') ?>">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>CTA gomb szöveg</label>
+                            <label><?= te('admin.pages.label_cta_text') ?></label>
                             <input type="text" name="sections[<?= $secId ?>][cta_text]" value="<?= $h($c['cta_text'] ?? '') ?>">
                         </div>
                         <div class="form-group">
-                            <label>CTA gomb URL</label>
+                            <label><?= te('admin.pages.label_cta_url') ?></label>
                             <input type="text" id="hs_cta_<?= $secId ?>" name="sections[<?= $secId ?>][cta_url]" value="<?= $h($c['cta_url'] ?? '') ?>">
                             <?php pageSelector($allPagesForLinks, 'hs_cta_' . $secId, $h); ?>
                         </div>
                         <div class="form-group">
-                            <label>Képváltás (mp)</label>
+                            <label><?= te('admin.pages.label_slide_interval') ?></label>
                             <input type="number" name="sections[<?= $secId ?>][interval]" value="<?= (int)($c['interval'] ?? 4) ?>" min="1" max="15">
                         </div>
                     </div>
                     <div class="help-box" style="margin:1rem 0 0.5rem">
-                        <strong>📸 Képek:</strong> A diavetítés a Média oldalon „kiemelt" jelölésű képeket használja automatikusan. <a href="/admin/media.php">Média kezelése →</a>
+                        <strong>📸 <?= te('admin.pages.hs_images_label') ?></strong> <?= te('admin.pages.hs_images_body') ?> <a href="/admin/media.php"><?= te('admin.pages.hs_media_link') ?> →</a>
                     </div>
                     <div class="repeater-editor" data-section-id="<?= $secId ?>">
-                        <p class="form-help">Navigációs dobozok a hero képen (opcionális):</p>
+                        <p class="form-help"><?= te('admin.pages.help_overlay_boxes') ?></p>
                         <?php foreach (($c['overlay_boxes'] ?? []) as $bi => $box): ?>
                             <div class="repeater-item">
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group" style="flex:2">
-                                        <label>Cím</label>
+                                        <label><?= te('common.title') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][overlay_boxes][<?= $bi ?>][title]" value="<?= $h($box['title'] ?? '') ?>">
                                     </div>
                                     <div class="form-group" style="flex:2">
-                                        <label>Link URL</label>
+                                        <label><?= te('admin.pages.label_link_url') ?></label>
                                         <input type="text" id="hs_box_<?= $secId ?>_<?= $bi ?>" name="sections[<?= $secId ?>][overlay_boxes][<?= $bi ?>][url]" value="<?= $h($box['url'] ?? '') ?>">
                                         <?php pageSelector($allPagesForLinks, 'hs_box_' . $secId . '_' . $bi, $h); ?>
                                     </div>
                                     <div class="form-group">
-                                        <label>Méret</label>
+                                        <label><?= te('admin.pages.label_size') ?></label>
                                         <select name="sections[<?= $secId ?>][overlay_boxes][<?= $bi ?>][size]">
-                                            <option value="large" <?= ($box['size'] ?? '') === 'large' ? 'selected' : '' ?>>Nagy</option>
-                                            <option value="small" <?= ($box['size'] ?? '') === 'small' ? 'selected' : '' ?>>Kicsi</option>
+                                            <option value="large" <?= ($box['size'] ?? '') === 'large' ? 'selected' : '' ?>><?= te('admin.pages.opt_large') ?></option>
+                                            <option value="small" <?= ($box['size'] ?? '') === 'small' ? 'selected' : '' ?>><?= te('admin.pages.opt_small') ?></option>
                                         </select>
                                     </div>
                                 </div>
@@ -1238,67 +1239,67 @@ require __DIR__ . '/includes/header.php';
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group" style="flex:2">
-                                        <label>Cím</label>
+                                        <label><?= te('common.title') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][overlay_boxes][__IDX__][title]" value="">
                                     </div>
                                     <div class="form-group" style="flex:2">
-                                        <label>Link URL</label>
+                                        <label><?= te('admin.pages.label_link_url') ?></label>
                                         <input type="text" id="hs_box_<?= $secId ?>___IDX__" name="sections[<?= $secId ?>][overlay_boxes][__IDX__][url]" value="">
                                         <?php pageSelectorTpl($allPagesForLinks, 'hs_box_' . $secId . '___IDX__', $h); ?>
                                     </div>
                                     <div class="form-group">
-                                        <label>Méret</label>
+                                        <label><?= te('admin.pages.label_size') ?></label>
                                         <select name="sections[<?= $secId ?>][overlay_boxes][__IDX__][size]">
-                                            <option value="large">Nagy</option>
-                                            <option value="small">Kicsi</option>
+                                            <option value="large"><?= te('admin.pages.opt_large') ?></option>
+                                            <option value="small"><?= te('admin.pages.opt_small') ?></option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
                         </template>
-                        <button type="button" class="btn btn-sm repeater-add-btn">+ Doboz hozzáadása</button>
+                        <button type="button" class="btn btn-sm repeater-add-btn">+ <?= te('admin.pages.add_box') ?></button>
                     </div>
                     <?php break;
 
                 case 'product_grid': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="form-group">
-                        <label>Oszlopok száma</label>
+                        <label><?= te('admin.pages.label_columns') ?></label>
                         <input type="number" name="sections[<?= $secId ?>][columns]" value="<?= (int)($c['columns'] ?? 5) ?>" min="2" max="6">
                     </div>
                     <div class="repeater-editor" data-section-id="<?= $secId ?>">
-                        <p class="form-help">Termékek/kiegészítők:</p>
+                        <p class="form-help"><?= te('admin.pages.help_products') ?></p>
                         <?php foreach (($c['items'] ?? []) as $pi => $pItem): ?>
                             <div class="repeater-item">
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Cím</label>
+                                        <label><?= te('common.title') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][<?= $pi ?>][title]" value="<?= $h($pItem['title'] ?? '') ?>">
                                     </div>
                                     <div class="form-group">
-                                        <label>Kép URL</label>
+                                        <label><?= te('admin.pages.label_image_url') ?></label>
                                         <div class="input-with-browse">
                                             <input type="text" id="pg_img_<?= $secId ?>_<?= $pi ?>" name="sections[<?= $secId ?>][items][<?= $pi ?>][image]" value="<?= $h($pItem['image'] ?? '') ?>">
-                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="pg_img_<?= $secId ?>_<?= $pi ?>">Tallózás</button>
+                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="pg_img_<?= $secId ?>_<?= $pi ?>"><?= te('common.browse') ?></button>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label>Link URL</label>
+                                        <label><?= te('admin.pages.label_link_url') ?></label>
                                         <input type="text" id="pg_url_<?= $secId ?>_<?= $pi ?>" name="sections[<?= $secId ?>][items][<?= $pi ?>][url]" value="<?= $h($pItem['url'] ?? '') ?>">
                                         <?php pageSelector($allPagesForLinks, 'pg_url_' . $secId . '_' . $pi, $h); ?>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Kép alt szöveg</label>
+                                        <label><?= te('admin.pages.label_image_alt') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][<?= $pi ?>][image_alt]" value="<?= $h($pItem['image_alt'] ?? '') ?>">
                                     </div>
                                     <div class="form-group" style="flex:2">
-                                        <label>Rövid leírás (hover)</label>
+                                        <label><?= te('admin.pages.label_short_desc_hover') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][<?= $pi ?>][short_desc]" value="<?= $h($pItem['short_desc'] ?? '') ?>">
                                     </div>
                                 </div>
@@ -1309,46 +1310,46 @@ require __DIR__ . '/includes/header.php';
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Cím</label>
+                                        <label><?= te('common.title') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][__IDX__][title]" value="">
                                     </div>
                                     <div class="form-group">
-                                        <label>Kép URL</label>
+                                        <label><?= te('admin.pages.label_image_url') ?></label>
                                         <div class="input-with-browse">
                                             <input type="text" id="pg_img_<?= $secId ?>___IDX__" name="sections[<?= $secId ?>][items][__IDX__][image]" value="">
-                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="pg_img_<?= $secId ?>___IDX__">Tallózás</button>
+                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="pg_img_<?= $secId ?>___IDX__"><?= te('common.browse') ?></button>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label>Link URL</label>
+                                        <label><?= te('admin.pages.label_link_url') ?></label>
                                         <input type="text" id="pg_url_<?= $secId ?>___IDX__" name="sections[<?= $secId ?>][items][__IDX__][url]" value="">
                                         <?php pageSelectorTpl($allPagesForLinks, 'pg_url_' . $secId . '___IDX__', $h); ?>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Kép alt szöveg</label>
+                                        <label><?= te('admin.pages.label_image_alt') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][__IDX__][image_alt]" value="">
                                     </div>
                                     <div class="form-group" style="flex:2">
-                                        <label>Rövid leírás (hover)</label>
+                                        <label><?= te('admin.pages.label_short_desc_hover') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][__IDX__][short_desc]" value="">
                                     </div>
                                 </div>
                             </div>
                         </template>
-                        <button type="button" class="btn btn-sm repeater-add-btn">+ Termék hozzáadása</button>
+                        <button type="button" class="btn btn-sm repeater-add-btn">+ <?= te('admin.pages.add_product') ?></button>
                     </div>
                     <?php break;
 
                 case 'seo_hidden': ?>
                     <div class="form-group">
-                        <label>Gomb szöveg (lenyitó gomb felirata)</label>
-                        <input type="text" name="sections[<?= $secId ?>][button_text]" value="<?= $h($c['button_text'] ?? 'Tovább olvasom...') ?>">
+                        <label><?= te('admin.pages.label_seo_button_text') ?></label>
+                        <input type="text" name="sections[<?= $secId ?>][button_text]" value="<?= $h($c['button_text'] ?? t('admin.pages.default_read_more')) ?>">
                     </div>
                     <div class="form-group">
-                        <label>Tartalom (SEO szöveg)
-                            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Ez a szöveg a Google számára látható, de a weboldalon rejtve van. Ideális hirdetési szövegek, kulcsszavak elhelyezésére.</span></span>
+                        <label><?= te('admin.pages.label_seo_content') ?>
+                            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_seo_content') ?></span></span>
                         </label>
                         <div class="quill-editor" id="quill_<?= $secId ?>"><?= $c['body'] ?? '' ?></div>
                         <textarea name="sections[<?= $secId ?>][body]" class="quill-hidden" id="quill_hidden_<?= $secId ?>" style="display:none;"><?= $h($c['body'] ?? '') ?></textarea>
@@ -1358,22 +1359,22 @@ require __DIR__ . '/includes/header.php';
                 case 'link_banner': ?>
                     <div class="form-row">
                         <div class="form-group" style="flex:3">
-                            <label>Szöveg</label>
+                            <label><?= te('admin.pages.label_text') ?></label>
                             <input type="text" name="sections[<?= $secId ?>][text]" value="<?= $h($c['text'] ?? '') ?>">
                         </div>
                         <div class="form-group">
-                            <label>Ikon (emoji)</label>
+                            <label><?= te('admin.pages.label_icon_emoji') ?></label>
                             <input type="text" name="sections[<?= $secId ?>][icon]" value="<?= $h($c['icon'] ?? '📖') ?>" style="width:60px">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group" style="flex:2">
-                            <label>Link URL</label>
+                            <label><?= te('admin.pages.label_link_url') ?></label>
                             <input type="text" id="lb_url_<?= $secId ?>" name="sections[<?= $secId ?>][url]" value="<?= $h($c['url'] ?? '') ?>">
                             <?php pageSelector($allPagesForLinks, 'lb_url_' . $secId, $h); ?>
                         </div>
                         <div class="form-group">
-                            <label>Háttérszín</label>
+                            <label><?= te('admin.pages.label_bg_color') ?></label>
                             <input type="color" name="sections[<?= $secId ?>][background_color]" value="<?= $h($c['background_color'] ?? '#0067FF') ?>">
                         </div>
                     </div>
@@ -1381,47 +1382,47 @@ require __DIR__ . '/includes/header.php';
 
                 case 'reference_gallery': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
+                        <label><?= te('admin.pages.label_heading') ?></label>
                         <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? '') ?>">
                     </div>
                     <div class="repeater-editor" data-section-id="<?= $secId ?>">
-                        <p class="form-help">Projektek:
-                            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Minden projekt: cím, borítókép, alt szöveg, és opcionális további képek.</span></span>
+                        <p class="form-help"><?= te('admin.pages.help_projects') ?>
+                            <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_projects') ?></span></span>
                         </p>
                         <?php foreach (($c['projects'] ?? []) as $pri => $proj): ?>
                             <div class="repeater-item" data-card-index="<?= $pri ?>" style="border-left:3px solid var(--admin-primary, #0067FF);padding-left:0.75rem;margin-bottom:1rem;">
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group" style="flex:2">
-                                        <label>Projekt címe</label>
+                                        <label><?= te('admin.pages.label_project_title') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][projects][<?= $pri ?>][title]" value="<?= $h($proj['title'] ?? '') ?>">
                                     </div>
                                     <div class="form-group" style="flex:2">
-                                        <label>Borítókép URL</label>
+                                        <label><?= te('admin.pages.label_cover_image_url') ?></label>
                                         <div class="input-with-browse">
                                             <input type="text" id="ref_cover_<?= $secId ?>_<?= $pri ?>" name="sections[<?= $secId ?>][projects][<?= $pri ?>][cover_image]" value="<?= $h($proj['cover_image'] ?? '') ?>">
-                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="ref_cover_<?= $secId ?>_<?= $pri ?>">Tallózás</button>
+                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="ref_cover_<?= $secId ?>_<?= $pri ?>"><?= te('common.browse') ?></button>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label>Borító alt szöveg</label>
+                                        <label><?= te('admin.pages.label_cover_alt') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][projects][<?= $pri ?>][cover_alt]" value="<?= $h($proj['cover_alt'] ?? '') ?>">
                                     </div>
                                 </div>
-                                <p class="form-help" style="margin-top:0.5rem;">További képek (projekt részletei):</p>
+                                <p class="form-help" style="margin-top:0.5rem;"><?= te('admin.pages.help_more_images') ?></p>
                                 <div class="ref-images-container">
                                     <?php foreach (($proj['images'] ?? []) as $rii => $rImg): ?>
                                         <div class="form-row ref-image-row" style="margin-bottom:0.35rem;">
                                             <div class="form-group" style="flex:2">
                                                 <div class="input-with-browse">
                                                     <input type="text" id="ref_img_<?= $secId ?>_<?= $pri ?>_<?= $rii ?>" name="sections[<?= $secId ?>][projects][<?= $pri ?>][images][<?= $rii ?>][url]" value="<?= $h($rImg['url'] ?? '') ?>">
-                                                    <button type="button" class="btn btn-sm browse-media-btn" data-target="ref_img_<?= $secId ?>_<?= $pri ?>_<?= $rii ?>">Tallózás</button>
+                                                    <button type="button" class="btn btn-sm browse-media-btn" data-target="ref_img_<?= $secId ?>_<?= $pri ?>_<?= $rii ?>"><?= te('common.browse') ?></button>
                                                 </div>
                                             </div>
                                             <div class="form-group" style="flex:2">
-                                                <input type="text" name="sections[<?= $secId ?>][projects][<?= $pri ?>][images][<?= $rii ?>][alt]" value="<?= $h($rImg['alt'] ?? '') ?>" placeholder="Alt szöveg">
+                                                <input type="text" name="sections[<?= $secId ?>][projects][<?= $pri ?>][images][<?= $rii ?>][alt]" value="<?= $h($rImg['alt'] ?? '') ?>" placeholder="<?= $h(t('admin.pages.placeholder_alt_text')) ?>">
                                             </div>
-                                            <button type="button" class="ref-image-remove repeater-remove" title="Kép törlése">✕</button>
+                                            <button type="button" class="ref-image-remove repeater-remove" title="<?= $h(t('admin.pages.remove_image')) ?>">✕</button>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
@@ -1430,16 +1431,16 @@ require __DIR__ . '/includes/header.php';
                                         <div class="form-group" style="flex:2">
                                             <div class="input-with-browse">
                                                 <input type="text" id="ref_img_<?= $secId ?>___PIDX_____IIDX__" name="sections[<?= $secId ?>][projects][__PIDX__][images][__IIDX__][url]" value="">
-                                                <button type="button" class="btn btn-sm browse-media-btn" data-target="ref_img_<?= $secId ?>___PIDX_____IIDX__">Tallózás</button>
+                                                <button type="button" class="btn btn-sm browse-media-btn" data-target="ref_img_<?= $secId ?>___PIDX_____IIDX__"><?= te('common.browse') ?></button>
                                             </div>
                                         </div>
                                         <div class="form-group" style="flex:2">
-                                            <input type="text" name="sections[<?= $secId ?>][projects][__PIDX__][images][__IIDX__][alt]" value="" placeholder="Alt szöveg">
+                                            <input type="text" name="sections[<?= $secId ?>][projects][__PIDX__][images][__IIDX__][alt]" value="" placeholder="<?= $h(t('admin.pages.placeholder_alt_text')) ?>">
                                         </div>
-                                        <button type="button" class="ref-image-remove repeater-remove" title="Kép törlése">✕</button>
+                                        <button type="button" class="ref-image-remove repeater-remove" title="<?= $h(t('admin.pages.remove_image')) ?>">✕</button>
                                     </div>
                                 </template>
-                                <button type="button" class="btn btn-xs ref-image-add-btn" style="margin-top:0.35rem;">+ Kép</button>
+                                <button type="button" class="btn btn-xs ref-image-add-btn" style="margin-top:0.35rem;">+ <?= te('admin.pages.add_image_short') ?></button>
                             </div>
                         <?php endforeach; ?>
                         <template class="repeater-template">
@@ -1447,75 +1448,75 @@ require __DIR__ . '/includes/header.php';
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group" style="flex:2">
-                                        <label>Projekt címe</label>
+                                        <label><?= te('admin.pages.label_project_title') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][projects][__IDX__][title]" value="">
                                     </div>
                                     <div class="form-group" style="flex:2">
-                                        <label>Borítókép URL</label>
+                                        <label><?= te('admin.pages.label_cover_image_url') ?></label>
                                         <div class="input-with-browse">
                                             <input type="text" id="ref_cover_<?= $secId ?>___IDX__" name="sections[<?= $secId ?>][projects][__IDX__][cover_image]" value="">
-                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="ref_cover_<?= $secId ?>___IDX__">Tallózás</button>
+                                            <button type="button" class="btn btn-sm browse-media-btn" data-target="ref_cover_<?= $secId ?>___IDX__"><?= te('common.browse') ?></button>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label>Borító alt szöveg</label>
+                                        <label><?= te('admin.pages.label_cover_alt') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][projects][__IDX__][cover_alt]" value="">
                                     </div>
                                 </div>
-                                <p class="form-help" style="margin-top:0.5rem;">További képek (projekt részletei):</p>
+                                <p class="form-help" style="margin-top:0.5rem;"><?= te('admin.pages.help_more_images') ?></p>
                                 <div class="ref-images-container"></div>
                                 <template class="ref-image-template">
                                     <div class="form-row ref-image-row" style="margin-bottom:0.35rem;">
                                         <div class="form-group" style="flex:2">
                                             <div class="input-with-browse">
                                                 <input type="text" id="ref_img_<?= $secId ?>___IDX_____IIDX__" name="sections[<?= $secId ?>][projects][__IDX__][images][__IIDX__][url]" value="">
-                                                <button type="button" class="btn btn-sm browse-media-btn" data-target="ref_img_<?= $secId ?>___IDX_____IIDX__">Tallózás</button>
+                                                <button type="button" class="btn btn-sm browse-media-btn" data-target="ref_img_<?= $secId ?>___IDX_____IIDX__"><?= te('common.browse') ?></button>
                                             </div>
                                         </div>
                                         <div class="form-group" style="flex:2">
-                                            <input type="text" name="sections[<?= $secId ?>][projects][__IDX__][images][__IIDX__][alt]" value="" placeholder="Alt szöveg">
+                                            <input type="text" name="sections[<?= $secId ?>][projects][__IDX__][images][__IIDX__][alt]" value="" placeholder="<?= $h(t('admin.pages.placeholder_alt_text')) ?>">
                                         </div>
-                                        <button type="button" class="ref-image-remove repeater-remove" title="Kép törlése">✕</button>
+                                        <button type="button" class="ref-image-remove repeater-remove" title="<?= $h(t('admin.pages.remove_image')) ?>">✕</button>
                                     </div>
                                 </template>
-                                <button type="button" class="btn btn-xs ref-image-add-btn" style="margin-top:0.35rem;">+ Kép</button>
+                                <button type="button" class="btn btn-xs ref-image-add-btn" style="margin-top:0.35rem;">+ <?= te('admin.pages.add_image_short') ?></button>
                             </div>
                         </template>
-                        <button type="button" class="btn btn-sm repeater-add-btn">+ Projekt hozzáadása</button>
+                        <button type="button" class="btn btn-sm repeater-add-btn">+ <?= te('admin.pages.add_project') ?></button>
                     </div>
                     <?php break;
 
                 case 'sitemap': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
-                        <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? 'Oldaltérkép') ?>">
+                        <label><?= te('admin.pages.label_heading') ?></label>
+                        <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? t('admin.section.sitemap_label')) ?>">
                     </div>
-                    <p class="form-help">Ez a szekció automatikusan generálja az oldaltérképet a menüszerkezet és a publikált oldalak alapján. Nincs szükség manuális konfigurációra.</p>
+                    <p class="form-help"><?= te('admin.pages.help_sitemap') ?></p>
                     <?php break;
 
                 case 'tudasmorzsak': ?>
                     <div class="form-group">
-                        <label>Címsor</label>
-                        <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? 'Tudásmorzsák') ?>">
+                        <label><?= te('admin.pages.label_heading') ?></label>
+                        <input type="text" name="sections[<?= $secId ?>][heading]" value="<?= $h($c['heading'] ?? t('admin.section.tudasmorzsak_label')) ?>">
                     </div>
                     <div class="repeater-editor" data-section-id="<?= $secId ?>">
-                        <p class="form-help">Tudásmorzsák (kis tudásdobozok, lexikon jellegű):</p>
+                        <p class="form-help"><?= te('admin.pages.help_morsels') ?></p>
                         <?php foreach (($c['items'] ?? []) as $tmi => $tmItem): ?>
                             <div class="repeater-item">
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group" style="flex:2">
-                                        <label>Cím</label>
+                                        <label><?= te('common.title') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][<?= $tmi ?>][title]" value="<?= $h($tmItem['title'] ?? '') ?>">
                                     </div>
                                     <div class="form-group" style="flex:2">
-                                        <label>Link URL (opcionális)</label>
+                                        <label><?= te('admin.pages.label_link_url_optional') ?></label>
                                         <input type="text" id="tm_url_<?= $secId ?>_<?= $tmi ?>" name="sections[<?= $secId ?>][items][<?= $tmi ?>][url]" value="<?= $h($tmItem['url'] ?? '') ?>">
                                         <?php pageSelector($allPagesForLinks, 'tm_url_' . $secId . '_' . $tmi, $h); ?>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Rövid leírás</label>
+                                    <label><?= te('admin.pages.label_short_desc') ?></label>
                                     <textarea name="sections[<?= $secId ?>][items][<?= $tmi ?>][description]" rows="2"><?= $h($tmItem['description'] ?? '') ?></textarea>
                                 </div>
                             </div>
@@ -1525,22 +1526,22 @@ require __DIR__ . '/includes/header.php';
                                 <?php repeaterRemoveBtn(); ?>
                                 <div class="form-row">
                                     <div class="form-group" style="flex:2">
-                                        <label>Cím</label>
+                                        <label><?= te('common.title') ?></label>
                                         <input type="text" name="sections[<?= $secId ?>][items][__IDX__][title]" value="">
                                     </div>
                                     <div class="form-group" style="flex:2">
-                                        <label>Link URL (opcionális)</label>
+                                        <label><?= te('admin.pages.label_link_url_optional') ?></label>
                                         <input type="text" id="tm_url_<?= $secId ?>___IDX__" name="sections[<?= $secId ?>][items][__IDX__][url]" value="">
                                         <?php pageSelectorTpl($allPagesForLinks, 'tm_url_' . $secId . '___IDX__', $h); ?>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Rövid leírás</label>
+                                    <label><?= te('admin.pages.label_short_desc') ?></label>
                                     <textarea name="sections[<?= $secId ?>][items][__IDX__][description]" rows="2"></textarea>
                                 </div>
                             </div>
                         </template>
-                        <button type="button" class="btn btn-sm repeater-add-btn">+ Morzsa hozzáadása</button>
+                        <button type="button" class="btn btn-sm repeater-add-btn">+ <?= te('admin.pages.add_morsel') ?></button>
                     </div>
                     <?php break;
 
@@ -1556,8 +1557,8 @@ require __DIR__ . '/includes/header.php';
 
     <input type="hidden" name="direction" value="">
     <div class="form-actions">
-        <button type="submit" name="save_page" value="1" class="btn btn-primary">Mentés</button>
-        <a href="/admin/pages.php" class="btn btn-secondary">Vissza</a>
+        <button type="submit" name="save_page" value="1" class="btn btn-primary"><?= te('common.save') ?></button>
+        <a href="/admin/pages.php" class="btn btn-secondary"><?= te('common.back') ?></a>
     </div>
 </form>
 
@@ -1565,8 +1566,8 @@ require __DIR__ . '/includes/header.php';
 
 <form method="POST" class="admin-form inline-form">
     <?= csrfField() ?>
-    <h3>Új szekció hozzáadása
-        <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Válasszon szekciótípust és kattintson a „Hozzáadás" gombra. Az új szekció az oldal végére kerül — utána a ▲/▼ gombokkal rendezheti.</span></span>
+    <h3><?= te('admin.pages.add_section_title') ?>
+        <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.pages.tooltip_label')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.pages.tooltip_add_section') ?></span></span>
     </h3>
     <div class="form-row">
         <div class="form-group">
@@ -1576,7 +1577,7 @@ require __DIR__ . '/includes/header.php';
                 <?php endforeach; ?>
             </select>
         </div>
-        <button type="submit" name="add_section" value="1" class="btn btn-primary">Hozzáadás</button>
+        <button type="submit" name="add_section" value="1" class="btn btn-primary"><?= te('common.add') ?></button>
     </div>
 </form>
 

@@ -2,7 +2,7 @@
 // ─── Sitemap Section ───
 // Renders a hierarchical sitemap of all published pages.
 $h = function ($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); };
-$heading = $content['heading'] ?? 'Oldaltérkép';
+$heading = !empty($content['heading']) ? $content['heading'] : t('site.sitemap');
 
 // Fetch all published pages
 $sitemapPages = [];
@@ -87,7 +87,7 @@ function renderSitemapTree($items, $h) {
         ?>
         <?php if (!empty($orphans)): ?>
             <div class="sitemap-orphans">
-                <h3>További oldalak</h3>
+                <h3><?= $h(t('site.more_pages')) ?></h3>
                 <ul class="sitemap-tree-level">
                     <?php foreach ($orphans as $op): ?>
                         <li>

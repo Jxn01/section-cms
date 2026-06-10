@@ -19,7 +19,7 @@ $cards = $content['cards'] ?? [];
                         <h3><?= $h($card['title'] ?? '') ?></h3>
                         <p><?= $h($card['description'] ?? '') ?></p>
                         <?php if (!empty($card['link'])): ?>
-                            <a href="<?= $h($card['link']) ?>" class="card-link">Tovább &rarr;</a>
+                            <a href="<?= $h($card['link']) ?>" class="card-link"><?= $h(t('site.read_more')) ?> &rarr;</a>
                         <?php endif; ?>
                     </article>
                 <?php endforeach; ?>

@@ -39,7 +39,7 @@ switch ($action) {
         $token = $input['csrf_token'] ?? '';
         if (!hash_equals(csrfToken(), $token)) {
             http_response_code(403);
-            echo json_encode(['ok' => false, 'message' => 'Érvénytelen CSRF token']);
+            echo json_encode(['ok' => false, 'message' => t('admin.api.invalid_csrf')]);
             exit;
         }
 
@@ -58,7 +58,7 @@ switch ($action) {
         $to   = $smtp['smtp_to']   ?: $user;
 
         if (!$host || !$user || !$pass || !$to) {
-            echo json_encode(['ok' => false, 'message' => 'Hiányzó SMTP beállítások. Először mentse el az összes mezőt.']);
+            echo json_encode(['ok' => false, 'message' => t('admin.api.missing_smtp')]);
             exit;
         }
 
@@ -84,18 +84,19 @@ switch ($action) {
                 $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
             }
 
-            $mail->setFrom($from, 'ParkolóABC.hu');
+            $mail->setFrom($from, 'Section CMS');
             $mail->addAddress($to);
 
+            $now = date('Y-m-d H:i:s');
             $mail->isHTML(true);
-            $mail->Subject = 'Teszt e-mail — ParkolóABC.hu';
-            $mail->Body    = '<h2>✅ Ez egy teszt e-mail</h2><p>Ha ezt a levelet megkapta, az SMTP beállítások helyesek.</p><p><small>Küldve: ' . date('Y-m-d H:i:s') . '</small></p>';
-            $mail->AltBody = "Teszt e-mail\nHa ezt a levelet megkapta, az SMTP beállítások helyesek.\nKüldve: " . date('Y-m-d H:i:s');
+            $mail->Subject = t('admin.api.test_subject');
+            $mail->Body    = t('admin.api.test_body', ['datetime' => $now]);
+            $mail->AltBody = t('admin.api.test_altbody', ['datetime' => $now]);
 
             $mail->send();
-            echo json_encode(['ok' => true, 'message' => 'Teszt e-mail elküldve (' . htmlspecialchars($to) . ')']);
+            echo json_encode(['ok' => true, 'message' => t('admin.api.test_sent', ['to' => htmlspecialchars($to)])]);
         } catch (Exception $e) {
-            echo json_encode(['ok' => false, 'message' => 'Küldési hiba: ' . $e->getMessage()]);
+            echo json_encode(['ok' => false, 'message' => t('admin.api.send_error', ['error' => $e->getMessage()])]);
         }
         break;
 

@@ -2,122 +2,83 @@
 
 ## Project
 
-- **Name:** parkoloabc
-- **Domain:** parkoloabc.hu
-- **Description:** Custom website replacing a WordPress installation on shared hosting (rackhost.hu). The WordPress files and database tables have been (or will be) removed entirely. This is a from-scratch custom site served from the same webroot.
-
-## Infrastructure
-
-- **Hosting:** rackhost.hu (shared hosting)
-- **Webroot access:** ftp.example.com (FTP/SFTP)
-- **Database:** MariaDB/MySQL at mysql.rackhost.hu, database name: `__REDACTED_DBUSER__`
-- **phpMyAdmin:** https://www.rackhost.hu/wpma/14/index.php (DB management UI, accessible from browser)
-- **Email domain:** parkoloabc.hu (details TBD)
-- **Credentials:** stored in `.env` at the project root (never commit this file)
+- **Name:** Section CMS
+- **Description:** A lightweight, modular, SEO-first content management system written from scratch in PHP. Pages are assembled server-side from typed "section" blocks, guaranteeing full crawlability. It is designed to run on cheap shared hosting — including hosting sold for WordPress — without a separate VPS.
 
 ## Architecture
 
-This project is a **micro-CMS** — a lightweight, modular, SEO-first content management system built from scratch in PHP.
-
-### Core Concept
-
-A single `index.php` front controller handles all requests. It resolves the URL slug, queries the database for page content and section blocks, assembles a complete HTML page server-side, and serves it to the browser. This guarantees full SEO crawlability — no client-side rendering.
+A single `index.php` front controller handles every public request. It resolves the URL slug, loads the page and its section blocks from the database, assembles complete HTML server-side and returns it. There is no client-side rendering.
 
 ### Routing
 
-All requests are funneled through `index.php` via `.htaccess` rewrite rules. Clean URLs like `/szolgaltatasaink` are resolved by looking up the slug in the `pages` table.
+All requests are funnelled through `index.php` via `.htaccess` rewrite rules. Clean URLs like `/services` are resolved by looking up the slug in the `pages` table. `sitemap.xml` and `robots.txt` are generated dynamically.
 
-### Database Schema
+### Database schema
 
 | Table | Purpose |
 |-------|---------|
-| `users` | Admin login (just the customer) |
-| `site_settings` | Site name, logo, colors, fonts, global SEO defaults, contact info |
-| `pages` | Slug, title, meta title/description/keywords, OG tags, status, sort order |
-| `sections` | Belongs to a page — typed blocks (hero, text, image, gallery, CTA, etc.) with JSON content, sort order |
-| `media` | Uploaded images with alt text (SEO!) |
-| `menus` | Navigation items, order, links |
+| `users` | Admin login |
+| `site_settings` | Site name, language, logo, colors, SEO defaults, contact info, SMTP |
+| `pages` | Slug, title, template, page type, meta/OG tags, status, sort order |
+| `sections` | Belongs to a page — typed blocks with a JSON `content` field and sort order |
+| `media` | Uploaded images with alt text |
+| `menus` | Navigation items (supports nesting via `parent_id`) |
+| `contact_messages` | Submissions from the contact form |
 
-### Section Types (modular components)
+### Section types
 
-Each section has a `type` and a JSON `content` field. Templates render each type:
+Each section has a `type` and a JSON `content` field. One template file per type lives in `templates/sections/`. Add a new type by creating a new template file — the renderer picks it up automatically.
 
-- `hero` — background image, headline, subtitle, CTA button
-- `text` — rich text block
-- `image_text` — image + text side by side
-- `gallery` — image grid
-- `cta` — call to action banner
-- `cards` — service cards in a grid
-- More can be added anytime by creating a new template file
+### Internationalization
 
-### SEO (main priority)
+The UI is bilingual (English default + Hungarian) via a small i18n layer:
 
-- Proper `<title>`, `<meta description>`, `<meta keywords>` per page
-- Open Graph + Twitter Card meta tags
-- Semantic HTML5 (`<header>`, `<main>`, `<section>`, `<article>`, `<footer>`)
-- JSON-LD structured data (Organization, WebSite, WebPage)
-- Canonical URLs
-- Auto-generated `sitemap.xml` and `robots.txt`
-- Clean URLs (no query string IDs)
-- Alt text on every image
-- Full server-side rendering — complete HTML delivered to the browser
+- `core/i18n.php` — `I18n` class plus the `t()` / `te()` helpers.
+- `config/lang/en/*.php` and `config/lang/hu/*.php` — dictionary part-files merged by `config/lang/{en,hu}.php`.
+- The public site's language comes from the `site_language` setting; the admin panel has a per-session language switch.
 
-### Admin Panel
+**Rule:** never hardcode user-facing strings. Add a key to the appropriate part-file (English is the fallback; keep EN/HU key sets identical) and render it with `t()` / `te()`. Page/section *content* is authored in the admin panel and stored in the DB, so it is not part of the dictionaries.
 
-- Lives at `/admin`
-- Hardcoded login page with session-based auth
-- Dashboard to manage pages, sections, media, site settings, menus
-- Section ordering via drag-and-drop (simple JS)
-- Image upload (PHP `move_uploaded_file` to `uploads/` directory)
+### SEO (a primary goal)
 
-### File Structure
+- Per-page `<title>`, meta description and keywords
+- Open Graph + Twitter Card tags, canonical URLs, JSON-LD (Organization, WebSite, WebPage/Article, BreadcrumbList)
+- Semantic HTML5, alt text on images, auto-generated `sitemap.xml` / `robots.txt`
+- Full server-side rendering
+
+### Admin panel
+
+Lives at `/admin`. Session-based auth, CSRF-protected forms. Manages pages, sections (drag-to-reorder), media, menus, settings, messages and the admin password.
+
+### File structure
 
 ```
-index.php              ← front controller (all public requests)
-.htaccess              ← rewrite all URLs to index.php
+index.php              ← front controller (public requests)
+.htaccess              ← rewrite rules, caching, security headers
 config/
-  db.php               ← DB connection (reads credentials from .env)
+  db.php               ← DB connection + SITE_BASE_URL (reads .env)
+  templates.php        ← page templates (preset section layouts)
+  lang/                ← i18n dictionaries (en/, hu/)
 core/
-  router.php           ← URL → page resolution
-  renderer.php         ← assembles full HTML from page + sections
-  seo.php              ← meta tags, JSON-LD, sitemap generation
+  i18n.php             ← translation layer
+  router.php           ← URL → page resolution, sitemap/robots
+  renderer.php         ← assembles HTML from page + sections
+  seo.php              ← meta tags, JSON-LD
+  sanitize.php         ← whitelist HTML sanitizer for WYSIWYG content
 templates/
-  base.php             ← HTML skeleton (doctype, head, body, footer)
-  sections/            ← one PHP file per section type
-admin/
-  index.php            ← admin panel entry point
-  auth.php             ← login / session logic
-assets/
-  css/                 ← stylesheets
-  js/                  ← scripts
-  uploads/             ← user-uploaded media
+  base.php             ← HTML skeleton
+  sections/            ← one file per section type
+admin/                 ← back-office (auth, pages, media, menus, settings…)
+database/              ← schema, demo seed, browser setup script
+lib/PHPMailer/         ← bundled SMTP mailer
+tools/deployer/        ← optional Go FTP/FTPS deployer
 ```
 
-## General Guidelines
+## Conventions
 
-- Write clean, readable, and maintainable code.
-- Prefer simplicity over cleverness.
-- Follow existing code style and conventions in the repository.
-- Use meaningful variable and function names.
-- Add comments only when the *why* isn't obvious from the code itself.
-
-## Code Style
-
-- Use consistent indentation (spaces, not tabs).
-- Keep functions short and focused on a single responsibility.
-- Avoid deeply nested logic — extract helpers when nesting exceeds 2–3 levels.
-
-## Git
-
-- Write clear, concise commit messages in imperative mood (e.g., "Add parking logic").
-- Keep commits focused on a single change.
-
-## Testing
-
-- Write tests for new functionality.
-- Ensure existing tests pass before committing.
-
-## Documentation
-
-- Keep README and docs up to date with code changes.
-- Document public APIs and non-obvious behavior.
+- Write clean, readable PHP. Prefer simplicity over cleverness; match the existing style.
+- Spaces, not tabs. Keep functions short and single-purpose.
+- Escape all output (`htmlspecialchars` / the `$h` helper / `te()`); use prepared statements for all queries.
+- Comments in English, only where the *why* isn't obvious.
+- Commit messages in imperative mood, focused on a single change.
+- Keep the README and `docs/` up to date with code changes.

@@ -1,16 +1,16 @@
 <?php
 // ═══════════════════════════════════════════════════════════════
-// Adatbázis kapcsolat (DB Connection)
+// Database Connection
 // ═══════════════════════════════════════════════════════════════
-// Beolvassa a hozzáférési adatokat a projekt gyökerében lévő
-// .env fájlból, és létrehozza a PDO kapcsolatot.
+// Reads credentials from the .env file in the project root (one
+// level above the web root) and opens a PDO connection.
 // ═══════════════════════════════════════════════════════════════
 
-// A .env fájl elérési útja (a webroot fölött egy szinttel)
+// Path to the .env file (kept outside version control — see .env.example).
 $envPath = __DIR__ . '/../.env';
 
 if (!file_exists($envPath)) {
-    die('Missing .env file.');
+    die('Missing .env file. Copy .env.example to .env and fill in your credentials.');
 }
 
 $env = [];
@@ -42,5 +42,18 @@ try {
     die('Database connection failed. Please try again later.');
 }
 
-// ─── A weboldal alap URL-je (egyetlen forrásból származó igazság) ───
-define('SITE_BASE_URL', 'https://www.parkoloabc.hu');
+// ─── Canonical site URL (single source of truth) ───
+// Prefer the explicit SITE_URL from .env. If it is not set, derive it
+// from the current request so the project runs on any domain without
+// code changes. (CLI scripts should set SITE_URL in .env.)
+if (!empty($env['SITE_URL'])) {
+    $siteBaseUrl = $env['SITE_URL'];
+} else {
+    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['SERVER_PORT'] ?? null) == 443)
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+    $scheme     = $https ? 'https' : 'http';
+    $hostHeader = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $siteBaseUrl = $scheme . '://' . $hostHeader;
+}
+define('SITE_BASE_URL', rtrim($siteBaseUrl, '/'));

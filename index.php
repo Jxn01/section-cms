@@ -1,33 +1,37 @@
 <?php
 // ═══════════════════════════════════════════════════════════════
-// Front Controller (Fő vezérlő)
+// Front Controller
 // ═══════════════════════════════════════════════════════════════
-// Minden nyilvános kérés ide érkezik a .htaccess átirányításon
-// keresztül. Az URL-ből kinyeri a slug-ot, lekéri az oldal
-// adatait az adatbázisból, és a teljes HTML-t rendereli.
+// Every public request lands here via the .htaccess rewrite. It
+// resolves the slug from the URL, loads the page from the database
+// and renders the complete HTML server-side.
 // ═══════════════════════════════════════════════════════════════
 
-require_once __DIR__ . '/config/db.php';   // Adatbázis kapcsolat ($pdo)
-require_once __DIR__ . '/core/router.php';  // URL → slug feloldás
-require_once __DIR__ . '/core/renderer.php';// Szekciók renderelése
-require_once __DIR__ . '/core/seo.php';     // Meta tag-ek, JSON-LD
+require_once __DIR__ . '/config/db.php';    // Database connection ($pdo)
+require_once __DIR__ . '/core/i18n.php';     // Translations / locale
+require_once __DIR__ . '/core/router.php';   // URL → slug resolution
+require_once __DIR__ . '/core/renderer.php'; // Section rendering
+require_once __DIR__ . '/core/seo.php';      // Meta tags, JSON-LD
 
-// Slug kinyerése az URL-ből (pl. "/szolgaltatasaink" → "szolgaltatasaink")
+// Resolve the slug from the URL (e.g. "/services" → "services").
 $slug = Router::resolve($_SERVER['REQUEST_URI']);
 
-// Speciális útvonalak kezelése (sitemap.xml, robots.txt)
+// Handle special routes (sitemap.xml, robots.txt).
 if (Router::handleSpecialRoutes($pdo, $slug)) {
     exit;
 }
 
-// Globális adatok betöltése (beállítások + navigációs menü)
+// Load global data (settings + navigation menu) and set the locale.
 $settings = Renderer::getSettings($pdo);
 $menus    = Renderer::getMenus($pdo);
+I18n::init($settings['site_language'] ?? 'en');
 
-// ─── Kulcsszó útvonal kezelése (/kulcsszo/{keyword}) ───
-// A kulcsszó felhő szekció linkjei ide mutatnak
-if (strpos($slug, 'kulcsszo/') === 0) {
-    $keyword = urldecode(substr($slug, 9));
+$siteName = $settings['site_name'] ?? 'Section CMS';
+
+// ─── Keyword route (/keyword/{keyword}) ───
+// The keyword cloud section links here.
+if (strpos($slug, 'keyword/') === 0) {
+    $keyword = urldecode(substr($slug, 8));
     if ($keyword !== '') {
         $matchingPages = Renderer::getPagesByKeyword($pdo, $keyword);
         require __DIR__ . '/templates/keyword_results.php';
@@ -35,8 +39,8 @@ if (strpos($slug, 'kulcsszo/') === 0) {
     }
 }
 
-// ─── Kapcsolatfelvételi űrlap feldolgozása ───
-// Az üzenet mentése adatbázisba + opcionális e-mail értesítés küldése
+// ─── Contact form submission ───
+// Stores the message in the database + sends an optional email notification.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
     session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Strict']);
     $contactName  = trim($_POST['contact_name'] ?? '');
@@ -63,9 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
                 'slug'  => $pageSlug,
             ]);
 
-            // ─── E-mail értesítés küldése (PHPMailer SMTP) ───
-            // SMTP konfiguráció: először site_settings (admin felületen szerkeszthető),
-            // majd .env fallback (ha az admin mezők üresek)
+            // ─── Send email notification (PHPMailer SMTP) ───
+            // SMTP config comes from site_settings first (editable in the
+            // admin panel), then falls back to .env if those fields are blank.
             $smtpHost = !empty($settings['smtp_host']) ? $settings['smtp_host'] : ($env['SMTP_HOST'] ?? '');
             $smtpUser = !empty($settings['smtp_user']) ? $settings['smtp_user'] : ($env['SMTP_USER'] ?? '');
             $smtpPass = !empty($settings['smtp_pass']) ? $settings['smtp_pass'] : ($env['SMTP_PASS'] ?? '');
@@ -96,23 +100,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
                         $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
                     }
 
-                    $mail->setFrom($smtpFrom, 'ParkolóABC.hu');
+                    $mail->setFrom($smtpFrom, $siteName);
                     $mail->addAddress($smtpTo);
                     $mail->addReplyTo($contactEmail, $contactName);
 
+                    $h = fn($v) => htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
                     $mail->isHTML(true);
-                    $mail->Subject = 'Új üzenet: ' . mb_substr($contactMsg, 0, 60, 'UTF-8') . '…';
-                    $mail->Body    = '<h2>Új kapcsolatfelvételi üzenet</h2>'
-                        . '<p><strong>Név:</strong> '    . htmlspecialchars($contactName)  . '</p>'
-                        . '<p><strong>E-mail:</strong> '  . htmlspecialchars($contactEmail) . '</p>'
-                        . '<p><strong>Telefon:</strong> ' . htmlspecialchars($contactPhone) . '</p>'
-                        . '<p><strong>Oldal:</strong> /'  . htmlspecialchars($pageSlug)     . '</p>'
-                        . '<hr><p>' . nl2br(htmlspecialchars($contactMsg)) . '</p>';
-                    $mail->AltBody = "Új üzenet\nNév: {$contactName}\nE-mail: {$contactEmail}\nTelefon: {$contactPhone}\nOldal: /{$pageSlug}\n\n{$contactMsg}";
+                    $mail->Subject = t('site.contact.email_subject', ['preview' => mb_substr($contactMsg, 0, 60, 'UTF-8')]);
+                    $mail->Body    = '<h2>' . $h(t('site.contact.email_heading')) . '</h2>'
+                        . '<p><strong>' . $h(t('site.contact.email_name'))  . ':</strong> ' . $h($contactName)  . '</p>'
+                        . '<p><strong>' . $h(t('site.contact.email_email')) . ':</strong> ' . $h($contactEmail) . '</p>'
+                        . '<p><strong>' . $h(t('site.contact.email_phone')) . ':</strong> ' . $h($contactPhone) . '</p>'
+                        . '<p><strong>' . $h(t('site.contact.email_page'))  . ':</strong> /' . $h($pageSlug)    . '</p>'
+                        . '<hr><p>' . nl2br($h($contactMsg)) . '</p>';
+                    $mail->AltBody = t('site.contact.email_heading') . "\n"
+                        . t('site.contact.email_name')  . ": {$contactName}\n"
+                        . t('site.contact.email_email') . ": {$contactEmail}\n"
+                        . t('site.contact.email_phone') . ": {$contactPhone}\n"
+                        . t('site.contact.email_page')  . ": /{$pageSlug}\n\n{$contactMsg}";
 
                     $mail->send();
                 } catch (Exception $mailEx) {
-                    // Email failed — silently ignore; the message is saved in DB
+                    // Email failed — silently ignore; the message is saved in DB.
                 }
             }
 
@@ -127,16 +136,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact_submit'])) {
     exit;
 }
 
-// Oldal keresése a slug alapján
+// Look up the page by slug.
 $page = Router::getPage($pdo, $slug);
 
-// Ha nincs ilyen publikált oldal → 404 hibaoldal megjelenítése
+// No published page with this slug → render the 404 page.
 if (!$page) {
     http_response_code(404);
     $page = [
-        'title'            => '404 – Az oldal nem található',
+        'title'            => '404',
         'slug'             => '404',
-        'meta_title'       => '404 – Az oldal nem található',
+        'meta_title'       => '404 – ' . $siteName,
         'meta_description' => '',
         'meta_keywords'    => '',
         'og_title'         => '',
@@ -151,13 +160,13 @@ if (!$page) {
     exit;
 }
 
-// SEO meta adatok összeállítása (title, description, OG, JSON-LD)
+// Build the SEO meta data (title, description, OG, JSON-LD).
 $seo = SEO::buildMeta($page, $settings);
 
-// Szekciók lekérése és HTML-lé renderelése
-// A $pdo szükséges a dinamikus szekciókhoz (kulcsszó felhő, oldal lista stb.)
+// Fetch the page's sections and render them to HTML.
+// $pdo is required by dynamic sections (keyword cloud, page list, etc.).
 $sections = Renderer::getSections($pdo, (int) $page['id']);
 $bodyHtml = Renderer::renderAllSections($sections, $pdo);
 
-// A teljes HTML oldal összeállítása és kiküldése a böngészőnek
+// Assemble the complete HTML page and send it to the browser.
 require __DIR__ . '/templates/base.php';

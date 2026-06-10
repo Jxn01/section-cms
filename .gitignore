@@ -1,4 +1,17 @@
+# Secrets / local config (never commit)
 .env
 deploy.conf
-legacy/
+
+# Build artifacts
 *.exe
+tools/deployer/deployer
+tools/deployer/section-cms-deployer
+
+# Uploaded media (managed on the server) — keep the folder, ignore contents
+assets/uploads/*
+!assets/uploads/.gitkeep
+legacy/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db

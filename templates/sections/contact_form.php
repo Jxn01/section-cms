@@ -15,13 +15,13 @@ $baseUrl    = strtok($currentUrl, '?');
 
         <?php if ($success): ?>
             <div class="form-success-message" role="alert">
-                <p>✓ <?= $h($content['success_message'] ?? 'Köszönjük az üzenetet! Hamarosan felvesszük Önnel a kapcsolatot.') ?></p>
+                <p>✓ <?= $h(!empty($content['success_message']) ? $content['success_message'] : t('site.contact.success')) ?></p>
             </div>
         <?php endif; ?>
 
         <?php if ($error): ?>
             <div class="form-error-message" role="alert">
-                <p>Hiba történt. Kérjük próbálja újra.</p>
+                <p><?= $h(t('site.contact.error')) ?></p>
             </div>
         <?php endif; ?>
 
@@ -34,27 +34,27 @@ $baseUrl    = strtok($currentUrl, '?');
             <input type="hidden" name="csrf_token" value="<?= $h($_SESSION['csrf_token']) ?>">
             <div class="form-grid">
                 <div class="form-field">
-                    <label for="contact_name">Név <span class="required">*</span></label>
+                    <label for="contact_name"><?= $h(t('site.contact.name')) ?> <span class="required">*</span></label>
                     <input type="text" id="contact_name" name="contact_name" required
-                           placeholder="Az Ön neve" autocomplete="name">
+                           placeholder="<?= $h(t('site.contact.name_ph')) ?>" autocomplete="name">
                 </div>
                 <div class="form-field">
-                    <label for="contact_email">E-mail <span class="required">*</span></label>
+                    <label for="contact_email"><?= $h(t('site.contact.email')) ?> <span class="required">*</span></label>
                     <input type="email" id="contact_email" name="contact_email" required
-                           placeholder="pelda@email.hu" autocomplete="email">
+                           placeholder="<?= $h(t('site.contact.email_ph')) ?>" autocomplete="email">
                 </div>
                 <div class="form-field">
-                    <label for="contact_phone">Telefon</label>
+                    <label for="contact_phone"><?= $h(t('site.contact.phone')) ?></label>
                     <input type="tel" id="contact_phone" name="contact_phone"
-                           placeholder="+36 ..." autocomplete="tel">
+                           placeholder="<?= $h(t('site.contact.phone_ph')) ?>" autocomplete="tel">
                 </div>
                 <div class="form-field form-field-full">
-                    <label for="contact_message">Üzenet <span class="required">*</span></label>
+                    <label for="contact_message"><?= $h(t('site.contact.message')) ?> <span class="required">*</span></label>
                     <textarea id="contact_message" name="contact_message" rows="5" required
-                              placeholder="Írja le üzenetét..."></textarea>
+                              placeholder="<?= $h(t('site.contact.message_ph')) ?>"></textarea>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Üzenet küldése</button>
+            <button type="submit" class="btn btn-primary"><?= $h(t('site.contact.submit')) ?></button>
         </form>
     </div>
 </section>

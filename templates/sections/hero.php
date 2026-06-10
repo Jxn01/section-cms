@@ -5,7 +5,7 @@ $h = function ($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); };
 $bgImage = $content['image'] ?? '';
 $bgStyle = $bgImage ? 'background-image:url(' . $h($bgImage) . ')' : '';
 ?>
-<section class="section section-hero" <?= $bgStyle ? 'style="' . $bgStyle . '"' : '' ?> aria-label="<?= $h($content['heading'] ?? 'Főkép') ?>">
+<section class="section section-hero" <?= $bgStyle ? 'style="' . $bgStyle . '"' : '' ?> aria-label="<?= $h(!empty($content['heading']) ? $content['heading'] : t('site.hero')) ?>">
     <div class="hero-overlay" aria-hidden="true"></div>
     <div class="container hero-content">
         <?php if (!empty($content['heading'])): ?>

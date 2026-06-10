@@ -1,15 +1,15 @@
 <?php
 // ═══════════════════════════════════════════════════════════════
-// Renderer (Megjelenítő)
+// Renderer
 // ═══════════════════════════════════════════════════════════════
-// Szekciók, beállítások és menük lekérése az adatbázisból,
-// majd a szekció sablonok renderelése HTML-lé.
+// Fetches sections, settings and menus from the database and
+// renders the section templates to HTML.
 // ═══════════════════════════════════════════════════════════════
 
 class Renderer {
 
     /**
-     * Egy oldal összes szekciójának lekérése, sort_order szerint rendezve.
+     * Fetch all sections for a page, ordered by sort_order.
      */
     public static function getSections(PDO $pdo, int $pageId): array {
         $stmt = $pdo->prepare(

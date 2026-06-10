@@ -2,7 +2,7 @@
 // ─── SEO Hidden Section ───
 // Collapsible text block — crawlable by Google but hidden until clicked.
 $h = function ($v) { return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8'); };
-$buttonText = $content['button_text'] ?? 'Tovább olvasom...';
+$buttonText = !empty($content['button_text']) ? $content['button_text'] : t('site.read_more_long');
 $body       = $content['body'] ?? '';
 ?>
 <section class="section section-seo-hidden" id="section-<?= $section['id'] ?>">

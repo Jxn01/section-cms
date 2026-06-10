@@ -41,14 +41,14 @@ $pages = $stmt->fetchAll();
                                 <p><?= $h(mb_strimwidth($p['meta_description'], 0, 160, '…')) ?></p>
                             <?php endif; ?>
                             <time datetime="<?= date('Y-m-d', strtotime($p['updated_at'])) ?>">
-                                <?= date('Y. m. d.', strtotime($p['updated_at'])) ?>
+                                <?= $h(I18n::formatDate($p['updated_at'])) ?>
                             </time>
                         </div>
                     </article>
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <p style="text-align:center;color:var(--color-gray);">Nincs megjeleníthető tartalom.</p>
+            <p style="text-align:center;color:var(--color-gray);"><?= $h(t('site.no_content')) ?></p>
         <?php endif; ?>
     </div>
 </section>

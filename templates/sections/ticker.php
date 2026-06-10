@@ -35,7 +35,7 @@ shuffle($items);
             <?php endforeach; ?>
         </div>
     </div>
-    <button class="ticker-pause-btn" aria-label="Futó szöveg szüneteltetése" aria-pressed="false">⏸</button>
+    <button class="ticker-pause-btn" aria-label="<?= $h(t('site.ticker_pause')) ?>" aria-pressed="false">⏸</button>
 </section>
 <script>
 (function() {
@@ -53,12 +53,12 @@ shuffle($items);
                 track.style.animationPlayState = 'running';
                 btn.setAttribute('aria-pressed', 'false');
                 btn.textContent = '\u23F8';
-                btn.setAttribute('aria-label', 'Futó szöveg szüneteltetése');
+                btn.setAttribute('aria-label', <?= json_encode(t('site.ticker_pause'), JSON_UNESCAPED_UNICODE) ?>);
             } else {
                 track.style.animationPlayState = 'paused';
                 btn.setAttribute('aria-pressed', 'true');
                 btn.textContent = '\u25B6';
-                btn.setAttribute('aria-label', 'Futó szöveg indítása');
+                btn.setAttribute('aria-label', <?= json_encode(t('site.ticker_play'), JSON_UNESCAPED_UNICODE) ?>);
             }
         });
     }

@@ -21,31 +21,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['change_password'])) 
     $user = $stmt->fetch();
 
     if (!$user || !password_verify($currentPw, $user['password_hash'])) {
-        $error = 'A jelenlegi jelszó helytelen.';
+        $error = t('admin.password.err_current');
     } elseif (strlen($newPw) < 6) {
-        $error = 'Az új jelszónak legalább 6 karakter hosszúnak kell lennie.';
+        $error = t('admin.password.err_min_length');
     } elseif ($newPw !== $confirmPw) {
-        $error = 'Az új jelszó és a megerősítés nem egyezik.';
+        $error = t('admin.password.err_mismatch');
     } else {
         $hash = password_hash($newPw, PASSWORD_BCRYPT);
         $pdo->prepare("UPDATE users SET password_hash = :hash WHERE id = :id")
             ->execute(['hash' => $hash, 'id' => $userId]);
-        $msg = 'Jelszó sikeresen megváltoztatva.';
+        $msg = t('admin.password.msg_changed');
     }
 }
 
 require __DIR__ . '/includes/header.php';
 ?>
 
-<h1>Jelszó módosítása</h1>
+<h1><?= te('admin.password.heading') ?></h1>
 
 <div class="help-box help-warning">
-    <strong>🔑 Biztonsági tippek a jelszóhoz:</strong>
+    <strong><?= te('admin.password.help_title') ?></strong>
     <ul style="margin:0.5rem 0 0 1.2rem;font-size:0.85rem;line-height:1.7;">
-        <li>Használjon legalább 8 karaktert (minimum 6 szükséges).</li>
-        <li>Keverjen nagy- és kisbetűket, számokat és speciális karaktereket.</li>
-        <li>Ne használja ugyanazt a jelszót más fiókokhoz.</li>
-        <li>Ne ossza meg a jelszót mással e-mailben vagy üzenetben.</li>
+        <li><?= te('admin.password.help_length') ?></li>
+        <li><?= te('admin.password.help_mix') ?></li>
+        <li><?= te('admin.password.help_unique') ?></li>
+        <li><?= te('admin.password.help_share') ?></li>
     </ul>
 </div>
 
@@ -59,24 +59,24 @@ require __DIR__ . '/includes/header.php';
 <form method="POST" class="admin-form">
     <?= csrfField() ?>
     <fieldset>
-        <legend>Jelszó módosítása</legend>
+        <legend><?= te('admin.password.legend') ?></legend>
         <div class="form-group">
-            <label for="current_password">Jelenlegi jelszó</label>
+            <label for="current_password"><?= te('admin.password.field_current') ?></label>
             <input type="password" id="current_password" name="current_password" required autocomplete="current-password">
         </div>
         <div class="form-group">
-            <label for="new_password">Új jelszó</label>
+            <label for="new_password"><?= te('admin.password.field_new') ?></label>
             <input type="password" id="new_password" name="new_password" required
                    minlength="6" autocomplete="new-password">
-            <small class="form-help">Legalább 6 karakter.</small>
+            <small class="form-help"><?= te('admin.password.hint_min') ?></small>
         </div>
         <div class="form-group">
-            <label for="confirm_password">Új jelszó megerősítése</label>
+            <label for="confirm_password"><?= te('admin.password.field_confirm') ?></label>
             <input type="password" id="confirm_password" name="confirm_password" required autocomplete="new-password">
         </div>
     </fieldset>
     <div class="form-actions">
-        <button type="submit" name="change_password" value="1" class="btn btn-primary">Jelszó módosítása</button>
+        <button type="submit" name="change_password" value="1" class="btn btn-primary"><?= te('admin.password.submit') ?></button>
     </div>
 </form>
 

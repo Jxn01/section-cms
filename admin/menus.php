@@ -180,20 +180,20 @@ require __DIR__ . '/includes/header.php';
 ?>
 
 <div class="page-header">
-    <h1>Menü kezelése</h1>
+    <h1><?= te('admin.menus.heading') ?></h1>
 </div>
 
 <div class="help-box">
-    <strong>🧭 A navigációs menü a weboldal fejlécében jelenik meg.</strong> A látogatók innen navigálnak az oldalak között. A menüpontok lehetnek felső szintű (mindig látható) vagy almenüpontok (legördülő menüben jelennek meg).
-    <button type="button" class="help-toggle" data-target="menuHelp" aria-expanded="false"><span class="help-toggle-icon">▸</span> Hogyan működik?</button>
+    <?= t('admin.menus.help') ?>
+    <button type="button" class="help-toggle" data-target="menuHelp" aria-expanded="false"><span class="help-toggle-icon">▸</span> <?= te('admin.menus.help_toggle') ?></button>
     <div class="help-collapsible" id="menuHelp">
         <ul style="margin:0.5rem 0 0 1.2rem;font-size:0.85rem;line-height:1.7;">
-            <li><strong>Címke:</strong> A menüpont megjelenő neve a fejlécben (pl. „Szolgáltatásaink").</li>
-            <li><strong>Oldal kiválasztása:</strong> Ha egy meglévő oldalhoz köti, az URL automatikusan beáll. Ez az ajánlott módszer!</li>
-            <li><strong>Egyedi URL:</strong> Ha nem oldalhoz köti, adjon meg egyedi URL-t (pl. külső link: <code>https://facebook.com</code>).</li>
-            <li><strong>Szülő menüpont:</strong> Ha beállít szülőt, a menüpont legördülő almenüben jelenik meg az adott szülő alatt.</li>
-            <li><strong>Sorrend:</strong> A ▲/▼ gombokkal változtathatja a menüpontok sorrendjét. A sorrend azonos szinten belül érvényes.</li>
-            <li><strong>Törlés:</strong> Ha egy szülő menüpontot töröl, az almenüpontjai felső szintűvé válnak.</li>
+            <li><?= t('admin.menus.help_label') ?></li>
+            <li><?= t('admin.menus.help_page') ?></li>
+            <li><?= t('admin.menus.help_url') ?></li>
+            <li><?= t('admin.menus.help_parent') ?></li>
+            <li><?= t('admin.menus.help_order') ?></li>
+            <li><?= t('admin.menus.help_delete') ?></li>
         </ul>
     </div>
 </div>
@@ -201,24 +201,24 @@ require __DIR__ . '/includes/header.php';
 <?php if (isset($_GET['msg'])): ?>
     <div class="alert alert-success">
         <?php
-        $msgs = ['added' => 'Menüpont hozzáadva.', 'saved' => 'Mentve.', 'deleted' => 'Menüpont törölve.'];
-        echo $h($msgs[$_GET['msg']] ?? 'Kész.');
+        $msgs = ['added' => t('admin.menus.msg_added'), 'saved' => t('admin.menus.msg_saved'), 'deleted' => t('admin.menus.msg_deleted')];
+        echo $h($msgs[$_GET['msg']] ?? t('admin.menus.msg_done'));
         ?>
     </div>
 <?php endif; ?>
 
 <!-- Current menu structure -->
 <div style="margin-bottom:2rem;">
-    <h2>Jelenlegi menüszerkezet</h2>
+    <h2><?= te('admin.menus.structure_heading') ?></h2>
     <div class="table-responsive">
     <table class="admin-table">
         <thead>
             <tr>
-                <th>Címke</th>
-                <th>URL</th>
-                <th>Szülő</th>
-                <th>Oldal</th>
-                <th>Műveletek</th>
+                <th><?= te('admin.menus.col_label') ?></th>
+                <th><?= te('admin.menus.col_url') ?></th>
+                <th><?= te('admin.menus.col_parent') ?></th>
+                <th><?= te('admin.menus.col_page') ?></th>
+                <th><?= te('common.actions') ?></th>
             </tr>
         </thead>
         <tbody>
@@ -257,10 +257,10 @@ require __DIR__ . '/includes/header.php';
                             <input type="hidden" name="direction" value="down">
                             <button type="submit" name="move_menu" value="<?= $item['id'] ?>" class="btn btn-xs">▼</button>
                         </form>
-                        <a href="/admin/menus.php?edit=<?= $item['id'] ?>" class="btn btn-sm">Szerkesztés</a>
-                        <form method="POST" style="display:inline;" onsubmit="return confirm('Biztosan törli?')">
+                        <a href="/admin/menus.php?edit=<?= $item['id'] ?>" class="btn btn-sm"><?= te('common.edit') ?></a>
+                        <form method="POST" style="display:inline;" onsubmit="return confirm('<?= $h(t('admin.menus.confirm_delete')) ?>')">
                             <?= csrfField() ?>
-                            <button type="submit" name="delete_menu" value="<?= $item['id'] ?>" class="btn btn-sm btn-danger">Törlés</button>
+                            <button type="submit" name="delete_menu" value="<?= $item['id'] ?>" class="btn btn-sm btn-danger"><?= te('common.delete') ?></button>
                         </form>
                     </td>
                 </tr>
@@ -273,7 +273,7 @@ require __DIR__ . '/includes/header.php';
             renderMenuTableRows($topLevel, $children, $h);
             ?>
             <?php if (empty($topLevel)): ?>
-                <tr><td colspan="5" style="text-align:center">Nincs menüpont.</td></tr>
+                <tr><td colspan="5" style="text-align:center"><?= te('admin.menus.empty') ?></td></tr>
             <?php endif; ?>
         </tbody>
     </table>
@@ -285,23 +285,23 @@ require __DIR__ . '/includes/header.php';
 <form method="POST" class="admin-form" style="margin-bottom:2rem;">
     <?= csrfField() ?>
     <fieldset>
-        <legend>Menüpont szerkesztése: <?= $h($editItem['label']) ?></legend>
+        <legend><?= $h(t('admin.menus.legend_edit', ['label' => $editItem['label']])) ?></legend>
         <input type="hidden" name="menu_id" value="<?= $editItem['id'] ?>">
         <div class="form-row">
             <div class="form-group">
-                <label>Címke</label>
+                <label><?= te('admin.menus.field_label') ?></label>
                 <input type="text" name="label" value="<?= $h($editItem['label']) ?>" required>
             </div>
             <div class="form-group">
-                <label>Egyedi URL (ha nincs oldalhoz kötve)</label>
-                <input type="text" name="url" value="<?= $h($editItem['url']) ?>" placeholder="/oldal-neve">
+                <label><?= te('admin.menus.field_url') ?></label>
+                <input type="text" name="url" value="<?= $h($editItem['url']) ?>" placeholder="<?= $h(t('admin.menus.url_placeholder')) ?>">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label>Oldal kiválasztása (opcionális)</label>
+                <label><?= te('admin.menus.field_page') ?></label>
                 <select name="page_id">
-                    <option value="">– Nincs (egyedi URL) –</option>
+                    <option value=""><?= te('admin.menus.option_no_page') ?></option>
                     <?php foreach ($allPages as $pg): ?>
                         <option value="<?= $pg['id'] ?>" <?= (int)($editItem['page_id'] ?? 0) === (int)$pg['id'] ? 'selected' : '' ?>>
                             <?= $h($pg['title']) ?> (/<?= $h($pg['slug']) ?>)
@@ -310,9 +310,9 @@ require __DIR__ . '/includes/header.php';
                 </select>
             </div>
             <div class="form-group">
-                <label>Szülő menüpont (legördülőhöz)</label>
+                <label><?= te('admin.menus.field_parent') ?></label>
                 <select name="parent_id">
-                    <option value="">– Felső szint –</option>
+                    <option value=""><?= te('admin.menus.option_top_level') ?></option>
                     <?php foreach ($flatMenuWithDepth as $fm): ?>
                         <?php if ((int) $fm['id'] !== (int) $editItem['id']): ?>
                             <option value="<?= $fm['id'] ?>" <?= (int)($editItem['parent_id'] ?? 0) === (int)$fm['id'] ? 'selected' : '' ?>>
@@ -324,8 +324,8 @@ require __DIR__ . '/includes/header.php';
             </div>
         </div>
         <div style="display:flex;gap:0.75rem;">
-            <button type="submit" name="update_menu" value="1" class="btn btn-primary">Mentés</button>
-            <a href="/admin/menus.php" class="btn btn-secondary">Mégse</a>
+            <button type="submit" name="update_menu" value="1" class="btn btn-primary"><?= te('common.save') ?></button>
+            <a href="/admin/menus.php" class="btn btn-secondary"><?= te('common.cancel') ?></a>
         </div>
     </fieldset>
 </form>
@@ -335,39 +335,39 @@ require __DIR__ . '/includes/header.php';
 <form method="POST" class="admin-form">
     <?= csrfField() ?>
     <fieldset>
-        <legend>Új menüpont hozzáadása</legend>
+        <legend><?= te('admin.menus.legend_add') ?></legend>
         <div class="form-row">
             <div class="form-group">
-                <label>Címke
-                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">A menüpont szövege, ami a navigációs sávban megjelenik. Legyen rövid és érthetó (pl. „Szolgáltatásaink", „Kapcsolat").</span></span>
+                <label><?= te('admin.menus.field_label') ?>
+                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.menus.tooltip_help')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.menus.tooltip_label') ?></span></span>
                 </label>
-                <input type="text" name="label" required placeholder="pl. Szolgáltatások">
+                <input type="text" name="label" required placeholder="<?= $h(t('admin.menus.label_placeholder')) ?>">
             </div>
             <div class="form-group">
-                <label>Egyedi URL (ha nincs oldalhoz kötve)
-                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Csak akkor kell kitölteni, ha nem oldalt választ alább. Használja külső linkekhez (pl. https://facebook.com) vagy speciális útvonalakhoz.</span></span>
+                <label><?= te('admin.menus.field_url') ?>
+                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.menus.tooltip_help')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.menus.tooltip_url') ?></span></span>
                 </label>
-                <input type="text" name="url" placeholder="/oldal-neve vagy https://...">
+                <input type="text" name="url" placeholder="<?= $h(t('admin.menus.url_placeholder_add')) ?>">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label>Oldal kiválasztása (opcionális)
-                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Ha egy meglévő oldalhoz köti a menüpontot, az URL automatikusan az oldal slug-jára áll be. Ez az ajánlott módszer!</span></span>
+                <label><?= te('admin.menus.field_page') ?>
+                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.menus.tooltip_help')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.menus.tooltip_page') ?></span></span>
                 </label>
                 <select name="page_id">
-                    <option value="">– Nincs (egyedi URL) –</option>
+                    <option value=""><?= te('admin.menus.option_no_page') ?></option>
                     <?php foreach ($allPages as $pg): ?>
                         <option value="<?= $pg['id'] ?>"><?= $h($pg['title']) ?> (/<?= $h($pg['slug']) ?>)</option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <div class="form-group">
-                <label>Szülő menüpont (legördülőhöz)
-                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="Segítség">?</button><span class="tooltip-bubble">Ha szülőt választ, ez a menüpont almenüként (legördülő menüben) jelenik meg a kiválasztott szülő alatt. „Felső szint" = önálló fő menüpont.</span></span>
+                <label><?= te('admin.menus.field_parent') ?>
+                    <span class="tooltip-wrap"><button type="button" class="tooltip-trigger" aria-label="<?= $h(t('admin.menus.tooltip_help')) ?>">?</button><span class="tooltip-bubble"><?= te('admin.menus.tooltip_parent') ?></span></span>
                 </label>
                 <select name="parent_id">
-                    <option value="">– Felső szint –</option>
+                    <option value=""><?= te('admin.menus.option_top_level') ?></option>
                     <?php foreach ($flatMenuWithDepth as $fm): ?>
                         <option value="<?= $fm['id'] ?>">
                             <?= str_repeat('\u00a0\u00a0\u00a0', $fm['_depth']) ?><?= $h($fm['label']) ?>
@@ -376,7 +376,7 @@ require __DIR__ . '/includes/header.php';
                 </select>
             </div>
         </div>
-        <button type="submit" name="add_menu" value="1" class="btn btn-primary">Hozzáadás</button>
+        <button type="submit" name="add_menu" value="1" class="btn btn-primary"><?= te('common.add') ?></button>
     </fieldset>
 </form>
 

@@ -28,21 +28,21 @@ require __DIR__ . '/includes/header.php';
 ?>
 
 <div class="page-header">
-    <h1>Oldalak</h1>
-    <a href="/admin/page-edit.php?new=1" class="btn btn-primary">+ Új oldal</a>
+    <h1><?= te('admin.pages.list_title') ?></h1>
+    <a href="/admin/page-edit.php?new=1" class="btn btn-primary">+ <?= te('admin.pages.new_page') ?></a>
 </div>
 
 <div class="help-box">
-    <strong>📄 Az oldalak a weboldal fő építőelemei.</strong> Minden oldal egyedi URL-en (slug-on) érhető el, és szekciókat tartalmaz (szöveg, kép, galéria, stb.). Az oldalak lehetnek „Publikált" (mindenki látja) vagy „Piszkozat" (csak itt látható).
-    <button type="button" class="help-toggle" data-target="pagesHelp" aria-expanded="false"><span class="help-toggle-icon">▸</span> Bővebb segítség</button>
+    <strong>📄 <?= te('admin.pages.help_intro') ?></strong> <?= te('admin.pages.help_intro_body') ?>
+    <button type="button" class="help-toggle" data-target="pagesHelp" aria-expanded="false"><span class="help-toggle-icon">▸</span> <?= te('admin.pages.help_more') ?></button>
     <div class="help-collapsible" id="pagesHelp">
         <ul style="margin:0.5rem 0 0 1.2rem;font-size:0.85rem;line-height:1.7;">
-            <li><strong>Cím:</strong> Az oldal neve, ami a böngésző fülön és a fejlécben jelenik meg.</li>
-            <li><strong>Slug:</strong> Az URL végén megjelenő azonosító (pl. <code>/szolgaltatasaink</code>). Csak kisbetűk, számok és kötőjel.</li>
-            <li><strong>Típus:</strong> „Oldal" — normál tartalom. „Cikk" — blogbejegyzés, speciális SEO jelöléssel (szerző, dátum).</li>
-            <li><strong>Szekciók:</strong> Egy oldal tetszőleges számú szekcióból (blokkból) áll. A szekciók sorrendje határozza meg az oldal felépítését.</li>
-            <li><strong>Státusz:</strong> „Publikált" = nyilvánosan elérhető, a Google is indexeli. „Piszkozat" = rejtett, csak az adminban látható.</li>
-            <li><strong>home slug:</strong> A főoldal (<code>/</code>). Ez az oldal nem törölhető és slug-ja nem változtatható.</li>
+            <li><strong><?= te('common.title') ?>:</strong> <?= te('admin.pages.help_title') ?></li>
+            <li><strong><?= te('common.slug') ?>:</strong> <?= te('admin.pages.help_slug') ?></li>
+            <li><strong><?= te('common.type') ?>:</strong> <?= te('admin.pages.help_type') ?></li>
+            <li><strong><?= te('admin.pages.sections') ?>:</strong> <?= te('admin.pages.help_sections') ?></li>
+            <li><strong><?= te('common.status') ?>:</strong> <?= te('admin.pages.help_status') ?></li>
+            <li><strong><?= te('admin.pages.help_home_slug_label') ?>:</strong> <?= te('admin.pages.help_home_slug') ?></li>
         </ul>
     </div>
 </div>
@@ -51,11 +51,11 @@ require __DIR__ . '/includes/header.php';
     <div class="alert alert-success">
         <?php
         $msgs = [
-            'saved'   => 'Oldal sikeresen mentve.',
-            'created' => 'Új oldal létrehozva.',
-            'deleted' => 'Oldal törölve.',
+            'saved'   => t('admin.pages.msg_saved'),
+            'created' => t('admin.pages.msg_created'),
+            'deleted' => t('admin.pages.msg_deleted'),
         ];
-        echo $h($msgs[$_GET['msg']] ?? 'Kész.');
+        echo $h($msgs[$_GET['msg']] ?? t('admin.pages.msg_done'));
         ?>
     </div>
 <?php endif; ?>
@@ -64,40 +64,40 @@ require __DIR__ . '/includes/header.php';
 <table class="admin-table">
     <thead>
         <tr>
-            <th>Cím</th>
-            <th>Slug</th>
-            <th>Típus</th>
-            <th>Szekciók</th>
-            <th>Státusz</th>
-            <th>Műveletek</th>
+            <th><?= te('common.title') ?></th>
+            <th><?= te('common.slug') ?></th>
+            <th><?= te('common.type') ?></th>
+            <th><?= te('admin.pages.sections') ?></th>
+            <th><?= te('common.status') ?></th>
+            <th><?= te('common.actions') ?></th>
         </tr>
     </thead>
     <tbody>
         <?php if (empty($pages)): ?>
-            <tr><td colspan="6" style="text-align:center">Nincsenek oldalak.</td></tr>
+            <tr><td colspan="6" style="text-align:center"><?= te('admin.pages.no_pages') ?></td></tr>
         <?php endif; ?>
         <?php foreach ($pages as $p): ?>
             <tr>
                 <td><strong><?= $h($p['title']) ?></strong></td>
                 <td><code>/<?= $h($p['slug']) ?></code></td>
-                <td><?= ($p['page_type'] ?? 'page') === 'article' ? '<span class="badge" style="background:#E0E7FF;color:#3730A3;">Cikk</span>' : 'Oldal' ?></td>
+                <td><?= ($p['page_type'] ?? 'page') === 'article' ? '<span class="badge" style="background:#E0E7FF;color:#3730A3;">' . $h(t('admin.pages.article')) . '</span>' : $h(t('admin.pages.page')) ?></td>
                 <td><?= (int) $p['section_count'] ?></td>
                 <td>
                     <span class="badge badge-<?= $p['status'] ?>">
-                        <?= $p['status'] === 'published' ? 'Publikált' : 'Piszkozat' ?>
+                        <?= $p['status'] === 'published' ? $h(t('common.published')) : $h(t('common.draft')) ?>
                     </span>
                 </td>
                 <td class="actions">
-                    <a href="/admin/page-edit.php?id=<?= $p['id'] ?>" class="btn btn-sm">Szerkesztés</a>
+                    <a href="/admin/page-edit.php?id=<?= $p['id'] ?>" class="btn btn-sm"><?= te('common.edit') ?></a>
                     <?php if ($p['slug'] !== 'home'): ?>
-                        <form method="POST" style="display:inline;" onsubmit="return confirm('Biztosan törli?')">
+                        <form method="POST" style="display:inline;" onsubmit="return confirm('<?= $h(t('admin.pages.confirm_delete')) ?>')">
                             <?= csrfField() ?>
                             <button type="submit" name="delete_page" value="<?= $p['id'] ?>"
-                                    class="btn btn-sm btn-danger">Törlés</button>
+                                    class="btn btn-sm btn-danger"><?= te('common.delete') ?></button>
                         </form>
                     <?php endif; ?>
                     <a href="/<?= $p['slug'] === 'home' ? '' : $h($p['slug']) ?>"
-                       target="_blank" class="btn btn-sm">Megtekintés ↗</a>
+                       target="_blank" class="btn btn-sm"><?= te('common.view') ?> ↗</a>
                 </td>
             </tr>
         <?php endforeach; ?>

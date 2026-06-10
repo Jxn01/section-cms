@@ -27,6 +27,6 @@ function csrfVerify(): void {
     $token = $_POST['csrf_token'] ?? '';
     if (!hash_equals(csrfToken(), $token)) {
         http_response_code(403);
-        die('Érvénytelen biztonsági token. Kérjük frissítse az oldalt és próbálja újra.');
+        die(htmlspecialchars(t('admin.csrf_invalid'), ENT_QUOTES, 'UTF-8'));
     }
 }

@@ -30,11 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_FILES['media_file'])) {
     $realMime = $finfo->file($file['tmp_name']);
 
     if ($file['error'] !== UPLOAD_ERR_OK) {
-        $uploadError = 'Feltöltési hiba. Kérjük próbálja újra.';
+        $uploadError = t('admin.media.err_upload');
     } elseif ($file['size'] > $maxSize) {
-        $uploadError = 'A fájl túl nagy. Maximum méret: 10 MB.';
+        $uploadError = t('admin.media.err_too_large');
     } elseif (!in_array($realMime, $allowedTypes) || !in_array($ext, $allowedExts)) {
-        $uploadError = 'Nem engedélyezett fájltípus. Csak JPEG, PNG, GIF és WebP engedélyezett.';
+        $uploadError = t('admin.media.err_type');
     } else {
         $safeExt  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $safeName = time() . '_' . preg_replace('/[^a-z0-9._-]/i', '', pathinfo($file['name'], PATHINFO_FILENAME));
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_FILES['media_file'])) {
             header('Location: ' . $redirectUrl);
             exit;
         } else {
-            $uploadError = 'Feltöltési hiba. Kérjük próbálja újra.';
+            $uploadError = t('admin.media.err_upload');
         }
     }
 }
@@ -110,11 +110,11 @@ $media = $pdo->query("SELECT * FROM media ORDER BY uploaded_at DESC")->fetchAll(
 // Browse mode — minimal layout
 if ($isBrowseMode): ?>
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="<?= I18n::htmlLang() ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Média böngésző</title>
+    <title><?= te('admin.media.browser_title') ?></title>
     <link rel="stylesheet" href="/admin/assets/admin.css">
     <style>
         body { background: var(--admin-bg); padding: 1rem; }
@@ -126,20 +126,20 @@ if ($isBrowseMode): ?>
     </style>
 </head>
 <body>
-    <h2>Kép kiválasztása</h2>
+    <h2><?= te('admin.media.pick_heading') ?></h2>
 
     <form method="POST" enctype="multipart/form-data" style="margin:1rem 0;">
         <?= csrfField() ?>
         <div style="display:flex;gap:0.5rem;align-items:end;flex-wrap:wrap;">
             <div class="form-group" style="flex:1;margin:0;">
-                <label>Új kép feltöltése</label>
+                <label><?= te('admin.media.upload_new') ?></label>
                 <input type="file" name="media_file" accept="image/*" required>
             </div>
             <div class="form-group" style="flex:1;margin:0;">
-                <label>Alt szöveg</label>
-                <input type="text" name="alt_text" placeholder="Kép leírása">
+                <label><?= te('admin.media.alt_text') ?></label>
+                <input type="text" name="alt_text" placeholder="<?= $h(t('admin.media.alt_placeholder')) ?>">
             </div>
-            <button type="submit" class="btn btn-primary btn-sm">Feltöltés</button>
+            <button type="submit" class="btn btn-primary btn-sm"><?= te('common.upload') ?></button>
         </div>
     </form>
 
@@ -155,7 +155,7 @@ if ($isBrowseMode): ?>
             </div>
         <?php endforeach; ?>
         <?php if (empty($media)): ?>
-            <p>Nincs feltöltött média. Töltsön fel képeket a fenti űrlappal.</p>
+            <p><?= te('admin.media.empty_browse') ?></p>
         <?php endif; ?>
     </div>
 
@@ -179,20 +179,20 @@ if ($isBrowseMode): ?>
 <?php require __DIR__ . '/includes/header.php'; ?>
 
 <div class="page-header">
-    <h1>Média</h1>
+    <h1><?= te('admin.media.heading') ?></h1>
 </div>
 
 <div class="help-box">
-    <strong>🖼️ Képek kezelése a weboldalhoz.</strong> Töltsön fel képeket, amelyeket a szekciókban használhat (hero háttér, galéria, kép+szöveg, stb.). A képek a szerkesztőben a „Tallózás" gombbal választhatók ki.
-    <button type="button" class="help-toggle" data-target="mediaHelp" aria-expanded="false"><span class="help-toggle-icon">▸</span> Fontos tudnivalók</button>
+    <?= t('admin.media.help') ?>
+    <button type="button" class="help-toggle" data-target="mediaHelp" aria-expanded="false"><span class="help-toggle-icon">▸</span> <?= te('admin.media.help_toggle') ?></button>
     <div class="help-collapsible" id="mediaHelp">
         <ul style="margin:0.5rem 0 0 1.2rem;font-size:0.85rem;line-height:1.7;">
-            <li><strong>Engedélyezett formátumok:</strong> JPEG, PNG, GIF, WebP. Maximum méret: 10 MB.</li>
-            <li><strong>Alt szöveg (nagyon fontos!):</strong> Írja le röviden, mit ábrázol a kép. Ez két dologért fontos:
-                <br>🔍 <em>SEO:</em> A Google a képkeresésben az alt szöveg alapján rangsorol.
-                <br>♿ <em>Akadálymentesség:</em> Képernyőolvasót használó látogatók ezt hallják a kép helyett.</li>
-            <li><strong>Képméret tipp:</strong> Hero háttérképhez legalább 1920×1080 px javasolt. Galéria képekhez 800×600 px elegendő.</li>
-            <li><strong>Fájlnév:</strong> A rendszer automatikusan biztonságos fájlnevet generál, nem kell vele foglalkozni.</li>
+            <li><?= t('admin.media.help_formats') ?></li>
+            <li><?= t('admin.media.help_alt') ?>
+                <br>🔍 <?= t('admin.media.help_alt_seo') ?>
+                <br>♿ <?= t('admin.media.help_alt_a11y') ?></li>
+            <li><?= t('admin.media.help_size') ?></li>
+            <li><?= t('admin.media.help_filename') ?></li>
         </ul>
     </div>
 </div>
@@ -200,8 +200,8 @@ if ($isBrowseMode): ?>
 <?php if (isset($_GET['msg'])): ?>
     <div class="alert alert-success">
         <?php
-        $msgs = ['uploaded' => 'Kép sikeresen feltöltve.', 'deleted' => 'Kép törölve.', 'saved' => 'Mentve.'];
-        echo $h($msgs[$_GET['msg']] ?? 'Kész.');
+        $msgs = ['uploaded' => t('admin.media.msg_uploaded'), 'deleted' => t('admin.media.msg_deleted'), 'saved' => t('admin.media.msg_saved')];
+        echo $h($msgs[$_GET['msg']] ?? t('admin.media.msg_done'));
         ?>
     </div>
 <?php endif; ?>
@@ -213,22 +213,22 @@ if ($isBrowseMode): ?>
 <form method="POST" enctype="multipart/form-data" class="admin-form" style="margin-bottom:2rem;">
     <?= csrfField() ?>
     <fieldset>
-        <legend>Új kép feltöltése</legend>
+        <legend><?= te('admin.media.legend_upload') ?></legend>
         <div class="form-row">
             <div class="form-group">
-                <label>Képfájl</label>
+                <label><?= te('admin.media.field_file') ?></label>
                 <input type="file" name="media_file" accept="image/*" required>
             </div>
             <div class="form-group">
-                <label>Alt szöveg (SEO) <span style="color:#D97706">*ajánlott</span></label>
-                <input type="text" name="alt_text" placeholder="A kép leírása keresőmotoroknak">
-                <div class="seo-hint seo-warn">⚠ Az alt szöveg fontos a Google képkereséshez és akadálymentességhez.</div>
+                <label><?= te('admin.media.field_alt_seo') ?> <span style="color:#D97706"><?= te('admin.media.recommended') ?></span></label>
+                <input type="text" name="alt_text" placeholder="<?= $h(t('admin.media.alt_placeholder_seo')) ?>">
+                <div class="seo-hint seo-warn"><?= te('admin.media.alt_warning') ?></div>
             </div>
         </div>
         <div class="form-group" style="margin:0.5rem 0;">
-            <label><input type="checkbox" name="is_featured" value="1"> ⭐ Kiemelt kép (megjelenik a főoldali diavetítésben)</label>
+            <label><input type="checkbox" name="is_featured" value="1"> <?= te('admin.media.featured_label') ?></label>
         </div>
-        <button type="submit" class="btn btn-primary">Feltöltés</button>
+        <button type="submit" class="btn btn-primary"><?= te('common.upload') ?></button>
     </fieldset>
 </form>
 
@@ -245,15 +245,15 @@ if ($isBrowseMode): ?>
                         <?= csrfField() ?>
                         <input type="hidden" name="media_id" value="<?= $m['id'] ?>">
                         <div class="form-group" style="margin-bottom:0.5rem;">
-                            <input type="text" name="alt_text" value="<?= $h($m['alt_text']) ?>" placeholder="Alt szöveg">
+                            <input type="text" name="alt_text" value="<?= $h($m['alt_text']) ?>" placeholder="<?= $h(t('admin.media.alt_placeholder_short')) ?>">
                         </div>
                         <div style="display:flex;gap:0.5rem;">
-                            <button type="submit" name="update_alt" value="1" class="btn btn-sm">Mentés</button>
+                            <button type="submit" name="update_alt" value="1" class="btn btn-sm"><?= te('common.save') ?></button>
                         </div>
                     </form>
-                    <form method="POST" style="margin-top:0.25rem;" onsubmit="return confirm('Biztosan törli?')">
+                    <form method="POST" style="margin-top:0.25rem;" onsubmit="return confirm('<?= $h(t('admin.media.confirm_delete')) ?>')">
                         <?= csrfField() ?>
-                        <button type="submit" name="delete_media" value="<?= $m['id'] ?>" class="btn btn-sm btn-danger">Törlés</button>
+                        <button type="submit" name="delete_media" value="<?= $m['id'] ?>" class="btn btn-sm btn-danger"><?= te('common.delete') ?></button>
                     </form>
                     <form method="POST" style="margin-top:0.25rem;">
                         <?= csrfField() ?>
@@ -264,19 +264,19 @@ if ($isBrowseMode): ?>
                             <input type="checkbox" name="is_featured" value="1"
                                    onchange="this.form.submit()"
                                    <?= !empty($m['is_featured']) ? 'checked' : '' ?>>
-                            ⭐ Kiemelt
+                            <?= te('admin.media.featured_short') ?>
                         </label>
                     </form>
                     <small class="text-muted">
                         <?= $h($m['original_name']) ?> · <?= round(($m['file_size'] ?? 0) / 1024) ?> KB
-                        · <?= date('Y.m.d', strtotime($m['uploaded_at'])) ?>
+                        · <?= $h(I18n::formatDate($m['uploaded_at'])) ?>
                     </small>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
 <?php else: ?>
-    <p>Nincs még feltöltött média.</p>
+    <p><?= te('admin.media.empty') ?></p>
 <?php endif; ?>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

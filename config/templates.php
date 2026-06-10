@@ -1,240 +1,217 @@
 <?php
 // ─── Page Templates ───
 // Each template defines a preset layout of section types.
-// When creating a new page, the user picks a template and
-// sections are auto-generated with placeholder content.
+// When creating a new page, the user picks a template and the
+// sections are auto-generated with placeholder content (which the
+// editor then replaces).
+//
+// The "name" of each template is an i18n key (see config/lang/*/
+// admin_templates.php); the admin renders it through t(). Placeholder
+// section content is written in the default locale (English).
 
 return [
     'hero_two_text' => [
-        'name' => 'Fejléckép + Két szövegblokk',
+        'name' => 'admin.template.hero_two_text',
         'sections' => [
             ['type' => 'hero', 'content' => [
-                'heading'  => 'Oldal címe',
-                'subtitle' => 'Alcím vagy rövid leírás.',
+                'heading'  => 'Page title',
+                'subtitle' => 'Subtitle or short description.',
                 'image'    => '/assets/images/hero-default.jpg',
                 'cta_text' => '',
                 'cta_url'  => '',
             ]],
             ['type' => 'text', 'content' => [
-                'heading' => 'Első szövegblokk',
-                'body'    => '<p>Írja ide a szöveget…</p>',
+                'heading' => 'First text block',
+                'body'    => '<p>Write your text here…</p>',
             ]],
             ['type' => 'text', 'content' => [
-                'heading' => 'Második szövegblokk',
-                'body'    => '<p>Írja ide a szöveget…</p>',
+                'heading' => 'Second text block',
+                'body'    => '<p>Write your text here…</p>',
             ]],
         ],
     ],
 
     'hero_text_imagetext' => [
-        'name' => 'Fejléckép + Szöveg + Kép & szöveg',
+        'name' => 'admin.template.hero_text_imagetext',
         'sections' => [
             ['type' => 'hero', 'content' => [
-                'heading'  => 'Oldal címe',
-                'subtitle' => 'Alcím vagy rövid leírás.',
+                'heading'  => 'Page title',
+                'subtitle' => 'Subtitle or short description.',
                 'image'    => '/assets/images/hero-default.jpg',
                 'cta_text' => '',
                 'cta_url'  => '',
             ]],
             ['type' => 'text', 'content' => [
-                'heading' => 'Szövegblokk',
-                'body'    => '<p>Írja ide a szöveget…</p>',
+                'heading' => 'Text block',
+                'body'    => '<p>Write your text here…</p>',
             ]],
             ['type' => 'image_text', 'content' => [
-                'heading'        => 'Kép és szöveg',
-                'body'           => '<p>Írja ide a szöveget…</p>',
+                'heading'        => 'Image and text',
+                'body'           => '<p>Write your text here…</p>',
                 'image'          => '/assets/images/placeholder.jpg',
-                'image_alt'      => 'Kép leírása',
+                'image_alt'      => 'Image description',
                 'image_position' => 'right',
             ]],
         ],
     ],
 
     'hero_cards_cta' => [
-        'name' => 'Fejléckép + Kártyák + CTA',
+        'name' => 'admin.template.hero_cards_cta',
         'sections' => [
             ['type' => 'hero', 'content' => [
-                'heading'  => 'Oldal címe',
-                'subtitle' => 'Alcím vagy rövid leírás.',
+                'heading'  => 'Page title',
+                'subtitle' => 'Subtitle or short description.',
                 'image'    => '/assets/images/hero-default.jpg',
                 'cta_text' => '',
                 'cta_url'  => '',
             ]],
             ['type' => 'cards', 'content' => [
-                'heading' => 'Kártyák',
+                'heading' => 'Cards',
                 'cards'   => [
-                    ['title' => 'Kártya 1', 'description' => 'Leírás…', 'icon' => '⭐', 'link' => ''],
-                    ['title' => 'Kártya 2', 'description' => 'Leírás…', 'icon' => '⭐', 'link' => ''],
-                    ['title' => 'Kártya 3', 'description' => 'Leírás…', 'icon' => '⭐', 'link' => ''],
+                    ['title' => 'Card 1', 'description' => 'Description…', 'icon' => '⭐', 'link' => ''],
+                    ['title' => 'Card 2', 'description' => 'Description…', 'icon' => '⭐', 'link' => ''],
+                    ['title' => 'Card 3', 'description' => 'Description…', 'icon' => '⭐', 'link' => ''],
                 ],
             ]],
             ['type' => 'cta', 'content' => [
-                'heading'          => 'Cselekvésre ösztönzés',
-                'subtitle'         => 'Rövid leírás a gomb fölött.',
-                'button_text'      => 'Tovább',
-                'button_url'       => '/kapcsolat',
+                'heading'          => 'Call to action',
+                'subtitle'         => 'Short description above the button.',
+                'button_text'      => 'Learn more',
+                'button_url'       => '/contact',
                 'background_color' => '#0067FF',
             ]],
         ],
     ],
 
     'hero_gallery' => [
-        'name' => 'Fejléckép + Galéria',
+        'name' => 'admin.template.hero_gallery',
         'sections' => [
             ['type' => 'hero', 'content' => [
-                'heading'  => 'Galéria',
+                'heading'  => 'Gallery',
                 'subtitle' => '',
                 'image'    => '/assets/images/hero-default.jpg',
                 'cta_text' => '',
                 'cta_url'  => '',
             ]],
             ['type' => 'gallery', 'content' => [
-                'heading' => 'Képgaléria',
+                'heading' => 'Image gallery',
                 'images'  => [
-                    ['url' => '/assets/images/placeholder.jpg', 'alt' => 'Kép 1'],
-                    ['url' => '/assets/images/placeholder.jpg', 'alt' => 'Kép 2'],
-                    ['url' => '/assets/images/placeholder.jpg', 'alt' => 'Kép 3'],
+                    ['url' => '/assets/images/placeholder.jpg', 'alt' => 'Image 1'],
+                    ['url' => '/assets/images/placeholder.jpg', 'alt' => 'Image 2'],
+                    ['url' => '/assets/images/placeholder.jpg', 'alt' => 'Image 3'],
                 ],
             ]],
         ],
     ],
 
     'simple_text' => [
-        'name' => 'Egyszerű szöveges oldal',
+        'name' => 'admin.template.simple_text',
         'sections' => [
             ['type' => 'text', 'content' => [
-                'heading' => 'Oldal címe',
-                'body'    => '<p>Írja ide a szöveget…</p>',
+                'heading' => 'Page title',
+                'body'    => '<p>Write your text here…</p>',
             ]],
         ],
     ],
 
     'article' => [
-        'name' => 'Cikk (szöveges + kapcsolódó tartalom)',
+        'name' => 'admin.template.article',
         'sections' => [
             ['type' => 'hero', 'content' => [
-                'heading'  => 'Cikk címe',
-                'subtitle' => 'Rövid összefoglaló.',
+                'heading'  => 'Article title',
+                'subtitle' => 'Short summary.',
                 'image'    => '',
                 'cta_text' => '',
                 'cta_url'  => '',
             ]],
             ['type' => 'text', 'content' => [
                 'heading' => '',
-                'body'    => '<p>A cikk szövege…</p>',
+                'body'    => '<p>The article text…</p>',
             ]],
             ['type' => 'cta', 'content' => [
-                'heading'          => 'Szeretne többet tudni?',
-                'subtitle'         => 'Vegye fel velünk a kapcsolatot!',
-                'button_text'      => 'Kapcsolat',
-                'button_url'       => '/kapcsolat',
+                'heading'          => 'Want to know more?',
+                'subtitle'         => 'Get in touch with us!',
+                'button_text'      => 'Contact',
+                'button_url'       => '/contact',
                 'background_color' => '#0067FF',
             ]],
         ],
     ],
 
     'landing_page' => [
-        'name' => 'Landing oldal (teljes)',
+        'name' => 'admin.template.landing_page',
         'sections' => [
             ['type' => 'hero', 'content' => [
-                'heading'  => 'Főcím',
-                'subtitle' => 'Alcím szöveg ide.',
+                'heading'  => 'Main headline',
+                'subtitle' => 'Subtitle text goes here.',
                 'image'    => '',
-                'cta_text' => 'Kezdjük el',
-                'cta_url'  => '#szolgaltatasok',
+                'cta_text' => 'Get started',
+                'cta_url'  => '#services',
             ]],
             ['type' => 'ticker', 'content' => [
                 'items' => [
-                    ['text' => 'Legfrissebb hír 1', 'link' => ''],
-                    ['text' => 'Legfrissebb hír 2', 'link' => ''],
-                    ['text' => 'Legfrissebb hír 3', 'link' => ''],
+                    ['text' => 'Latest news 1', 'link' => ''],
+                    ['text' => 'Latest news 2', 'link' => ''],
+                    ['text' => 'Latest news 3', 'link' => ''],
                 ],
                 'speed' => 30,
                 'background_color' => '#0067FF',
                 'text_color' => '#FFFFFF',
             ]],
             ['type' => 'cards', 'content' => [
-                'heading' => 'Szolgáltatásaink',
+                'heading' => 'Our services',
                 'cards'   => [
-                    ['title' => 'Szolgáltatás 1', 'description' => 'Leírás…', 'icon' => '🚀', 'link' => ''],
-                    ['title' => 'Szolgáltatás 2', 'description' => 'Leírás…', 'icon' => '💡', 'link' => ''],
-                    ['title' => 'Szolgáltatás 3', 'description' => 'Leírás…', 'icon' => '🎯', 'link' => ''],
+                    ['title' => 'Service 1', 'description' => 'Description…', 'icon' => '🚀', 'link' => ''],
+                    ['title' => 'Service 2', 'description' => 'Description…', 'icon' => '💡', 'link' => ''],
+                    ['title' => 'Service 3', 'description' => 'Description…', 'icon' => '🎯', 'link' => ''],
                 ],
             ]],
             ['type' => 'stats', 'content' => [
                 'heading' => '',
                 'background_color' => '#0067FF',
                 'items' => [
-                    ['number' => '100+', 'label' => 'Elégedett ügyfél'],
-                    ['number' => '50+', 'label' => 'Projekt'],
-                    ['number' => '10+', 'label' => 'Év tapasztalat'],
+                    ['number' => '100+', 'label' => 'Happy clients'],
+                    ['number' => '50+', 'label' => 'Projects'],
+                    ['number' => '10+', 'label' => 'Years of experience'],
                 ],
             ]],
             ['type' => 'two_columns', 'content' => [
-                'heading'    => 'Rólunk',
-                'left_body'  => '<p>Bal oldali szöveg…</p>',
-                'right_body' => '<p>Jobb oldali szöveg…</p>',
+                'heading'    => 'About us',
+                'left_body'  => '<p>Left column text…</p>',
+                'right_body' => '<p>Right column text…</p>',
             ]],
             ['type' => 'testimonials', 'content' => [
-                'heading' => 'Ügyfeleink mondták',
+                'heading' => 'What our clients say',
                 'items'   => [
-                    ['name' => 'Kiss Péter', 'text' => 'Kiváló szolgáltatás!', 'role' => 'Ügyvezető', 'image' => ''],
+                    ['name' => 'Jane Doe', 'text' => 'Excellent service!', 'role' => 'CEO', 'image' => ''],
                 ],
             ]],
             ['type' => 'cta', 'content' => [
-                'heading'          => 'Készen áll?',
-                'subtitle'         => 'Lépjen velünk kapcsolatba még ma!',
-                'button_text'      => 'Kapcsolat',
-                'button_url'       => '/kapcsolat',
-                'background_color' => '#0067FF',
-            ]],
-        ],
-    ],
-
-    'faq_page' => [
-        'name' => 'GYIK oldal',
-        'sections' => [
-            ['type' => 'hero', 'content' => [
-                'heading'  => 'Gyakran Ismételt Kérdések',
-                'subtitle' => 'Válaszok a leggyakoribb kérdésekre.',
-                'image'    => '',
-                'cta_text' => '',
-                'cta_url'  => '',
-            ]],
-            ['type' => 'accordion', 'content' => [
-                'heading' => '',
-                'items'   => [
-                    ['question' => 'Első kérdés?', 'answer' => '<p>Válasz szövege…</p>'],
-                    ['question' => 'Második kérdés?', 'answer' => '<p>Válasz szövege…</p>'],
-                    ['question' => 'Harmadik kérdés?', 'answer' => '<p>Válasz szövege…</p>'],
-                ],
-            ]],
-            ['type' => 'cta', 'content' => [
-                'heading'          => 'Nem találta a választ?',
-                'subtitle'         => 'Írjon nekünk!',
-                'button_text'      => 'Kapcsolat',
-                'button_url'       => '/kapcsolat',
+                'heading'          => 'Ready to start?',
+                'subtitle'         => 'Get in touch with us today!',
+                'button_text'      => 'Contact',
+                'button_url'       => '/contact',
                 'background_color' => '#0067FF',
             ]],
         ],
     ],
 
     'contact_page' => [
-        'name' => 'Kapcsolat oldal (űrlap + térkép)',
+        'name' => 'admin.template.contact_page',
         'sections' => [
             ['type' => 'hero', 'content' => [
-                'heading'  => 'Kapcsolat',
-                'subtitle' => 'Lépjen velünk kapcsolatba!',
+                'heading'  => 'Contact',
+                'subtitle' => 'Get in touch with us!',
                 'image'    => '',
                 'cta_text' => '',
                 'cta_url'  => '',
             ]],
             ['type' => 'contact_form', 'content' => [
-                'heading'         => 'Írjon nekünk',
-                'success_message' => 'Köszönjük az üzenetet! Hamarosan felvesszük Önnel a kapcsolatot.',
+                'heading'         => 'Write to us',
+                'success_message' => '',
             ]],
             ['type' => 'map', 'content' => [
-                'heading'   => 'Térkép',
+                'heading'   => 'Map',
                 'embed_url' => '',
                 'height'    => '400',
             ]],
@@ -242,11 +219,11 @@ return [
     ],
 
     'blog_listing' => [
-        'name' => 'Cikk lista oldal',
+        'name' => 'admin.template.blog_listing',
         'sections' => [
             ['type' => 'hero', 'content' => [
-                'heading'  => 'Cikkek',
-                'subtitle' => 'Legfrissebb cikkeink.',
+                'heading'  => 'Articles',
+                'subtitle' => 'Our latest articles.',
                 'image'    => '',
                 'cta_text' => '',
                 'cta_url'  => '',
@@ -260,11 +237,11 @@ return [
     ],
 
     'keywords_page' => [
-        'name' => 'Kulcsszó felhő oldal',
+        'name' => 'admin.template.keywords_page',
         'sections' => [
             ['type' => 'text', 'content' => [
-                'heading' => 'Témakörök',
-                'body'    => '<p>Böngésszen témakörök szerint!</p>',
+                'heading' => 'Topics',
+                'body'    => '<p>Browse by topic!</p>',
             ]],
             ['type' => 'keywords_cloud', 'content' => [
                 'heading' => '',
@@ -274,135 +251,136 @@ return [
     ],
 
     'product_catalog' => [
-        'name' => 'Termékkatalógus oldal (hero + termékrács + linksáv + CTA)',
+        'name' => 'admin.template.product_catalog',
         'sections' => [
             ['type' => 'hero', 'content' => [
-                'heading'  => 'Termékkatalógus',
-                'subtitle' => 'Fedezze fel termékeinket és kiegészítőinket.',
+                'heading'  => 'Product catalog',
+                'subtitle' => 'Explore our products and accessories.',
                 'image'    => '',
                 'cta_text' => '',
                 'cta_url'  => '',
             ]],
             ['type' => 'image_text', 'content' => [
-                'heading'        => 'Termékcsalád bemutatása',
-                'body'           => '<p>Írja ide a szöveget…</p>',
+                'heading'        => 'Product range overview',
+                'body'           => '<p>Write your text here…</p>',
                 'image'          => '',
                 'image_alt'      => '',
                 'image_position' => 'left',
             ]],
             ['type' => 'product_grid', 'content' => [
-                'heading' => 'Termékek és kiegészítők',
+                'heading' => 'Products and accessories',
                 'columns' => 5,
                 'items'   => [
-                    ['title' => 'Termék 1', 'short_desc' => 'Rövid leírás hover-re.', 'image' => '', 'image_alt' => '', 'url' => ''],
-                    ['title' => 'Termék 2', 'short_desc' => 'Rövid leírás hover-re.', 'image' => '', 'image_alt' => '', 'url' => ''],
-                    ['title' => 'Termék 3', 'short_desc' => 'Rövid leírás hover-re.', 'image' => '', 'image_alt' => '', 'url' => ''],
+                    ['title' => 'Product 1', 'short_desc' => 'Short description on hover.', 'image' => '', 'image_alt' => '', 'url' => ''],
+                    ['title' => 'Product 2', 'short_desc' => 'Short description on hover.', 'image' => '', 'image_alt' => '', 'url' => ''],
+                    ['title' => 'Product 3', 'short_desc' => 'Short description on hover.', 'image' => '', 'image_alt' => '', 'url' => ''],
                 ],
             ]],
             ['type' => 'link_banner', 'content' => [
-                'text'             => 'Alapfogalmak és jelmagyarázat',
-                'url'              => '/alapfogalmak',
+                'text'             => 'Glossary and basics',
+                'url'              => '/glossary',
                 'icon'             => '📖',
                 'background_color' => '#0067FF',
             ]],
             ['type' => 'cta', 'content' => [
-                'heading'          => 'Kérjen árajánlatot!',
-                'subtitle'         => 'Személyre szabott megoldás az Ön igényeire.',
-                'button_text'      => 'Kapcsolatfelvétel',
-                'button_url'       => '/kapcsolat',
+                'heading'          => 'Request a quote!',
+                'subtitle'         => 'A tailored solution for your needs.',
+                'button_text'      => 'Get in touch',
+                'button_url'       => '/contact',
                 'background_color' => '#0067FF',
             ]],
         ],
     ],
 
     'reference_page' => [
-        'name' => 'Referencia oldal (hero + galéria + CTA)',
+        'name' => 'admin.template.reference_page',
         'sections' => [
             ['type' => 'hero', 'content' => [
-                'heading'  => 'Referenciáink',
-                'subtitle' => 'Büszkék vagyunk eddigi munkáinkra.',
+                'heading'  => 'Our references',
+                'subtitle' => 'We are proud of our work so far.',
                 'image'    => '',
                 'cta_text' => '',
                 'cta_url'  => '',
             ]],
             ['type' => 'reference_gallery', 'content' => [
-                'heading'  => 'Korábbi projektjeink',
+                'heading'  => 'Past projects',
                 'projects' => [
-                    ['title' => 'Projekt 1', 'cover_image' => '', 'cover_alt' => '', 'images' => []],
+                    ['title' => 'Project 1', 'cover_image' => '', 'cover_alt' => '', 'images' => []],
                 ],
             ]],
             ['type' => 'cta', 'content' => [
-                'heading'          => 'Legyen Ön a következő!',
-                'subtitle'         => 'Kérjen ingyenes helyszíni felmérést.',
-                'button_text'      => 'Kapcsolatfelvétel',
-                'button_url'       => '/kapcsolat',
+                'heading'          => 'You could be next!',
+                'subtitle'         => 'Request a free, no-obligation consultation.',
+                'button_text'      => 'Get in touch',
+                'button_url'       => '/contact',
                 'background_color' => '#0067FF',
             ]],
         ],
     ],
 
     'faq_page' => [
-        'name' => 'Alapfogalmak / GYIK (hero + harmonikák + CTA)',
+        'name' => 'admin.template.faq_page',
         'sections' => [
             ['type' => 'hero', 'content' => [
-                'heading'  => 'Alapfogalmak',
-                'subtitle' => 'Szakkifejezések és fogalmak érthetően.',
+                'heading'  => 'Frequently Asked Questions',
+                'subtitle' => 'Answers to the most common questions.',
                 'image'    => '',
                 'cta_text' => '',
                 'cta_url'  => '',
             ]],
             ['type' => 'accordion', 'content' => [
-                'heading' => 'Fogalmak',
+                'heading' => '',
                 'items'   => [
-                    ['question' => 'Kérdés 1', 'answer' => '<p>Válasz…</p>'],
-                    ['question' => 'Kérdés 2', 'answer' => '<p>Válasz…</p>'],
+                    ['question' => 'First question?', 'answer' => '<p>Answer text…</p>'],
+                    ['question' => 'Second question?', 'answer' => '<p>Answer text…</p>'],
+                    ['question' => 'Third question?', 'answer' => '<p>Answer text…</p>'],
                 ],
             ]],
             ['type' => 'cta', 'content' => [
-                'heading'          => 'Kérdése van?',
-                'subtitle'         => 'Írjon nekünk!',
-                'button_text'      => 'Kapcsolatfelvétel',
-                'button_url'       => '/kapcsolat',
+                'heading'          => 'Didn\'t find your answer?',
+                'subtitle'         => 'Write to us!',
+                'button_text'      => 'Contact',
+                'button_url'       => '/contact',
                 'background_color' => '#0067FF',
             ]],
         ],
     ],
 
     'homepage_slideshow' => [
-        'name' => 'Főoldal diavetítéssel (slideshow + kártyák + SEO szöveg + CTA)',
+        'name' => 'admin.template.homepage_slideshow',
         'sections' => [
             ['type' => 'hero_slideshow', 'content' => [
-                'heading'      => 'Parkoló ABC',
-                'subtitle'     => 'Parkolórendszerek, beléptető rendszerek, munkaidő nyilvántartás.',
-                'cta_text'     => 'Szolgáltatásaink',
-                'cta_url'      => '/szolgaltatasaink',
+                'heading'      => 'Welcome',
+                'subtitle'     => 'A short, compelling description of what you do.',
+                'cta_text'     => 'Our services',
+                'cta_url'      => '/services',
                 'interval'     => 4,
                 'overlay_boxes' => [
-                    ['title' => 'Fizetős parkolórendszerek',   'url' => '/fizetos-parkolo-rendszerek',    'size' => 'large'],
-                    ['title' => 'Beléptetős parkolórendszerek', 'url' => '/beleptetos-parkolo-rendszerek', 'size' => 'large'],
-                    ['title' => 'Vegyes rendszerek',            'url' => '/vegyes-parkolo-rendszerek',     'size' => 'small'],
-                    ['title' => 'Beléptető rendszerek',         'url' => '/belepteto-rendszerek',          'size' => 'large'],
-                    ['title' => 'Munkaidő nyilvántartás',       'url' => '/munkaido-nyilvantarto-rendszerek', 'size' => 'small'],
-                    ['title' => 'Referenciáink',                'url' => '/referenciaink',                 'size' => 'small'],
+                    ['title' => 'Service one',   'url' => '/services',  'size' => 'large'],
+                    ['title' => 'Service two',   'url' => '/services',  'size' => 'large'],
+                    ['title' => 'Service three', 'url' => '/services',  'size' => 'small'],
+                    ['title' => 'About us',      'url' => '/about',     'size' => 'large'],
+                    ['title' => 'References',    'url' => '/references', 'size' => 'small'],
+                    ['title' => 'Contact',       'url' => '/contact',   'size' => 'small'],
                 ],
             ]],
             ['type' => 'cards', 'content' => [
-                'heading' => 'Szolgáltatásaink',
+                'heading' => 'Our services',
                 'cards'   => [
-                    ['title' => 'Parkoló rendszerek', 'description' => 'Fizetős, beléptetős és vegyes parkolórendszerek.', 'icon' => '🅿️', 'link' => '/parkolo-rendszerek'],
-                    ['title' => 'Beléptető rendszerek', 'description' => 'RFID, kártyás és biometrikus beléptetés.', 'icon' => '🚧', 'link' => '/belepteto-rendszerek'],
-                    ['title' => 'Munkaidő nyilvántartás', 'description' => 'Terminálok és szoftver a pontos jelenléti adatokért.', 'icon' => '⏱️', 'link' => '/munkaido-nyilvantarto-rendszerek'],
+                    ['title' => 'Service 1', 'description' => 'A short description of this service.', 'icon' => '🚀', 'link' => '/services'],
+                    ['title' => 'Service 2', 'description' => 'A short description of this service.', 'icon' => '💡', 'link' => '/services'],
+                    ['title' => 'Service 3', 'description' => 'A short description of this service.', 'icon' => '🎯', 'link' => '/services'],
                 ],
             ]],
             ['type' => 'seo_hidden', 'content' => [
-                'button_text' => 'Tovább olvasom...',
-                'body'        => '<p>Parkoló rendszerek, beléptető rendszerek és munkaidő nyilvántartó rendszerek telepítése és karbantartása Magyarországon.</p>',
+                'button_text' => 'Read more...',
+                'body'        => '<p>A longer, SEO-friendly description of your business, services and the areas you serve.</p>',
             ]],
             ['type' => 'cta', 'content' => [
-                'heading'          => 'Kérjen ingyenes árajánlatot!',
-                'subtitle'         => 'Szakértőink segítenek megtalálni a tökéletes megoldást.',
-                'button_text'      => 'Kapcsolatfelvétel',
-                'button_url'       => '/kapcsolat',
+                'heading'          => 'Request a free quote!',
+                'subtitle'         => 'Our experts will help you find the perfect solution.',
+                'button_text'      => 'Get in touch',
+                'button_url'       => '/contact',
                 'background_color' => '#0067FF',
             ]],
         ],
